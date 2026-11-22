@@ -61,6 +61,16 @@
       "</article>";
   }).join("");
 
+  /* ---------- Reviews ---------- */
+  $("#reviewGrid").innerHTML = (D.reviews || []).map(function (r) {
+    return '<figure class="review"><div class="stars" aria-label="5 stars">★★★★★</div><blockquote>“' + esc(r.quote) +
+      '”</blockquote><figcaption>' + esc(r.source) + "</figcaption></figure>";
+  }).join("");
+
+  /* ---------- Online ordering links ---------- */
+  $$("[data-order-link]").forEach(function (a) { a.href = D.info.orderOnline; });
+  $$("[data-order-hours]").forEach(function (el) { el.textContent = D.info.orderHours; });
+
   /* ---------- Menu tabs ---------- */
   var tabsEl = $("#menuTabs");
   var panelsEl = $("#menuPanels");
@@ -123,7 +133,7 @@
         return "<tr><td>" + esc(t.name) + "</td><td>" + money(t.half) + "</td><td>" + money(t.full) + "</td></tr>";
       }).join("") + "</tbody></table></div>";
   });
-  trayCards.push('<div class="tray-card"><h4>Starters, Bread &amp; Dolci</h4><table class="tray-table"><thead><tr><th scope="col">Item</th><th scope="col">Price</th></tr></thead><tbody>' +
+  trayCards.push('<div class="tray-card"><h4>Starters, Bread &amp; Desserts</h4><table class="tray-table"><thead><tr><th scope="col">Item</th><th scope="col">Price</th></tr></thead><tbody>' +
     D.extras.map(function (x) {
       return "<tr><td>" + esc(x.name) + "</td><td>" + money(x.price) + (x.unit === "dozen" ? "/dz" : "") + "</td></tr>";
     }).join("") + "</tbody></table></div>");
@@ -150,7 +160,7 @@
         '<label class="tp-qty">Full<input type="number" min="0" max="50" value="0" inputmode="numeric" data-tray="' + t.id + '" data-size="full" aria-label="' + esc(t.name) + ' full pans"></label></div>';
     }).join("");
   }).join("");
-  picker += "<h4>Starters, Bread &amp; Dolci</h4>" + D.extras.map(function (x) {
+  picker += "<h4>Starters, Bread &amp; Desserts</h4>" + D.extras.map(function (x) {
     return '<div class="tp-row"><span class="tp-name">' + esc(x.name) + "<small>" + money(x.price) + " per " + x.unit + "</small></span>" +
       '<span></span><label class="tp-qty">Qty<input type="number" min="0" max="50" value="0" inputmode="numeric" data-extra="' + x.id + '" aria-label="' + esc(x.name) + ' quantity"></label></div>';
   }).join("");
@@ -179,7 +189,7 @@
   var hotGroups = { "Pasta & Lasagna": true, "Entrées": true };
   var hotTray = {};
   D.trays.forEach(function (g) { g.items.forEach(function (t) { hotTray[t.id] = !!hotGroups[g.group]; }); });
-  var hotDishesPerPackage = { pranzo: 1, cena: 2, festa: 3 };
+  var hotDishesPerPackage = { lunch: 1, dinner: 2, celebration: 3 };
 
   function qty(input) {
     var n = parseInt(input.value, 10);
@@ -313,7 +323,7 @@
       }).then(function (res) {
         if (!res.ok) throw new Error("bad status");
         msg.className = "form-msg ok";
-        msg.textContent = "Grazie! Your request was sent. We'll contact you within one business day to confirm.";
+        msg.textContent = "Thank you! Your request was sent. We'll contact you within one business day to confirm.";
         form.reset();
         update();
       }).catch(function () {

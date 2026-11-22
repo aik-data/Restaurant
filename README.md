@@ -20,11 +20,16 @@ Open `index.html` in any browser. No build step, no install.
 **Verified from public listings (Nov 2026):**
 - Address, phone (661) 822-1711, dinner hours Tue–Sat 4:30–8 PM, closed Sun–Mon
 - Menu prices for 14 items from the restaurant's online-ordering page: Prosciutto Wrapped Asparagus $12, Breaded Cheese Ravioli $10, Mozzarella Sticks $10, Shrimp Cocktail $13, Soup of the Day $9, Caesar $12, Spinach $15, Caprese $15, Tuscan Antipasto $16, Pasta Perfetto $22 (+$5 chicken), Bolognese Lasagna $22, Veggie Lasagna $21, Shrimp Scampi $25, Veal Parmesan $25
+- Pasta Perfetto (sun-dried tomato & garlic sauce, warm goat cheese) and Bolognese Lasagna (seasoned Angus beef) descriptions, from the ordering page
+- Existing online pickup ordering at order.online (4:30–6:50 PM). The site links to it.
 - Dish names on the rest of the menu (from Yelp, Restaurantji, Checkle and others)
+- Yelp already lists "Offers catering" and "Offers takeout"
 
 **Owners to fill in or confirm:**
-- [ ] Prices for items showing "—" (all of Pasta, Secondi and Dolci, plus a few starters and salads)
-- [ ] Dish descriptions: what's actually in Pasta Perfetto, the Eggplant Wrap, Fig & Gorgonzola, etc.
+- [ ] Prices for items showing "—" (all of Pasta, Entrées and Desserts, plus a few starters and salads)
+- [ ] Dish descriptions: the Eggplant Wrap, Fig & Gorgonzola, Stuffed Eggplant, etc.
+- [ ] The 3 review quotes: check each against the original review, or swap in favorites from Google
+- [ ] An "Our story" blurb: who the family is, where the recipes come from
 - [ ] Remove any dishes no longer served, and add missing ones
 - [ ] **Catering prices.** All package and tray prices are *suggestions* based on the dine-in prices. Check them against food cost.
 - [ ] Catering rules: notice, delivery area and fee, deposit, minimums

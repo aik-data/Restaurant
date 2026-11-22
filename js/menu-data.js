@@ -20,7 +20,9 @@ window.PERFETTO = {
     city: "Tehachapi, CA 93561",
     phone: "(661) 822-1711",
     phoneHref: "tel:+16618221711",
-    email: "", // TODO: add a catering inbox, e.g. catering@perfettotehachapi.com
+    email: "",
+    orderOnline: "https://order.online/store/perfetto-italian-restaurant-209-s-green-st-1177349", // their existing pickup ordering page
+    orderHours: "Online pickup orders 4:30 – 6:50 PM", // TODO: add a catering inbox, e.g. catering@perfettotehachapi.com
     mapsQuery: "Perfetto Italian Restaurant, 209 S Green St, Tehachapi, CA 93561",
     hours: [
       { days: "Tuesday – Saturday", time: "4:30 – 8:00 PM" },
@@ -32,9 +34,9 @@ window.PERFETTO = {
   /* ---------------- RESTAURANT MENU ---------------- */
   menu: [
     {
-      id: "antipasti",
-      title: "Antipasti",
-      subtitle: "Starters to share",
+      id: "starters",
+      title: "Starters",
+      subtitle: "Great for sharing",
       items: [
         { name: "Prosciutto Wrapped Asparagus", desc: "Lightly grilled and seasoned asparagus wrapped in prosciutto. Three pieces.", price: 12, verified: true, favorite: true },
         { name: "Breaded Cheese Ravioli", desc: "Golden fried cheese ravioli with marinara for dipping.", price: 10, verified: true, favorite: true },
@@ -47,8 +49,8 @@ window.PERFETTO = {
       ],
     },
     {
-      id: "zuppe-insalate",
-      title: "Zuppe & Insalate",
+      id: "soups-salads",
+      title: "Soups & Salads",
       subtitle: "Salads come with bread · Dressings: sweet Italian, ranch, balsamic vinegar or blue cheese",
       items: [
         { name: "Soup of the Day", desc: "Ask your server. Served with garlic bread.", price: 9, verified: true },
@@ -56,17 +58,17 @@ window.PERFETTO = {
         { name: "Spinach Salad", desc: "Baby spinach, dried cranberries, toasted pecans and blue cheese.", price: 15, verified: true },
         { name: "Caprese Salad", desc: "Fresh mozzarella, tomato and basil.", price: 15, verified: true },
         { name: "Tuscan Antipasto Salad", desc: "Italian meats, cheeses and vegetables over greens.", price: 16, verified: true },
-        { name: "Warm Chèvre Salad", desc: "Greens topped with warm goat cheese.", price: null },
+        { name: "Warm Goat Cheese Salad", desc: "Greens topped with warm goat cheese.", price: null },
         { name: "Fig & Gorgonzola Salad", desc: "", price: null },
       ],
     },
     {
-      id: "specialita",
-      title: "Specialità della Casa",
-      subtitle: "House specialties",
+      id: "house",
+      title: "House Specialties",
+      subtitle: "What we're known for",
       items: [
-        { name: "Pasta Perfetto", desc: "Our signature house pasta. Add chicken +$5.", price: 22, verified: true, favorite: true },
-        { name: "Bolognese Lasagna", desc: "Layers of pasta, meat sauce and cheese, baked.", price: 22, verified: true, favorite: true },
+        { name: "Pasta Perfetto", desc: "Our signature. House-made pasta in a sun-dried tomato and garlic sauce, topped with warm crumbled goat cheese. Add chicken +$5.", price: 22, verified: true, favorite: true },
+        { name: "Bolognese Lasagna", desc: "Seasoned Angus beef, tomato sauce and layers of cheese. Our most-loved dish.", price: 22, verified: true, favorite: true },
         { name: "Veggie Lasagna", desc: "Layers of pasta, vegetables and cheese, baked.", price: 21, verified: true },
         { name: "Shrimp Scampi", desc: "Shrimp in garlic butter and white wine over pasta.", price: 25, verified: true, favorite: true },
         { name: "Veal Parmesan", desc: "Breaded veal, marinara and melted mozzarella. Served with pasta.", price: 25, verified: true },
@@ -75,7 +77,7 @@ window.PERFETTO = {
     {
       id: "pasta",
       title: "Pasta",
-      subtitle: "Pasta made fresh in house",
+      subtitle: "Made fresh in our kitchen",
       items: [
         { name: "Fettuccine Alfredo", desc: "Creamy parmesan sauce.", price: null },
         { name: "Pasta Bolognese", desc: "Slow-simmered meat sauce.", price: null },
@@ -91,26 +93,26 @@ window.PERFETTO = {
       ],
     },
     {
-      id: "secondi",
-      title: "Secondi",
-      subtitle: "Entrées",
+      id: "entrees",
+      title: "Entrées",
+      subtitle: "Chicken, veal, seafood & more",
       items: [
         { name: "Chicken Marsala", desc: "Chicken breast with mushrooms in a Marsala wine sauce.", price: null, favorite: true },
-        { name: "Chicken Parmigiana", desc: "Breaded chicken, marinara and melted mozzarella.", price: null },
+        { name: "Chicken Parmesan", desc: "Breaded chicken, marinara and melted mozzarella.", price: null, favorite: true },
         { name: "Chicken Cordon Bleu", desc: "Chicken with ham and Swiss cheese.", price: null, favorite: true },
         { name: "Veal Marsala", desc: "Veal with mushrooms in a Marsala wine sauce.", price: null },
-        { name: "Veal Scallopini with Lemon", desc: "", price: null },
+        { name: "Lemon Veal Scallopini", desc: "Thin veal cutlets in a lemon butter sauce.", price: null },
         { name: "Eggplant Parmesan", desc: "Breaded eggplant, marinara and mozzarella.", price: null, favorite: true },
-        { name: "Melanzane a Barchetta", desc: "Stuffed eggplant boats.", price: null },
+        { name: "Stuffed Eggplant", desc: "Eggplant halves, stuffed and baked.", price: null },
         { name: "Grilled Salmon", desc: "", price: null },
         { name: "Tilapia Fillet", desc: "", price: null },
         { name: "Lamb Stew", desc: "Tender lamb stewed with mushrooms.", price: null },
       ],
     },
     {
-      id: "dolci",
-      title: "Dolci",
-      subtitle: "Dessert",
+      id: "desserts",
+      title: "Desserts",
+      subtitle: "Save room",
       items: [
         { name: "Tiramisu", desc: "Espresso-soaked ladyfingers and mascarpone cream.", price: null, favorite: true },
         { name: "Homemade Cannoli", desc: "Crisp shells, sweet ricotta filling.", price: null },
@@ -119,15 +121,25 @@ window.PERFETTO = {
     },
   ],
 
-  menuNote: "Ask about tonight's specials, like our seafood and sea bass specials. Vegan options are available on request with notice.",
+  menuNote: "Ask about tonight's specials, like our seafood and sea bass specials. Vegan options available on request with notice. Generous portions, so plan on leftovers.",
+
+  /* ---------------- GUEST REVIEWS ----------------
+   * Short excerpts from public reviews. Before launch, check each one
+   * against the original review and swap in the owners' favorites.
+   */
+  reviews: [
+    { quote: "Best lasagna I ever had, and I think most will agree.", source: "Guest review" },
+    { quote: "I've only done takeout and had the chicken parmesan. It was absolutely amazing.", source: "Google review" },
+    { quote: "The tiramisu is to die for!", source: "Guest review" },
+  ],
 
   /* ---------------- CATERING ---------------- */
   // Per-person packages. Minimum guests applies to each.
   packages: [
     {
-      id: "pranzo",
-      name: "Il Pranzo",
-      tag: "Office lunch",
+      id: "lunch",
+      name: "Office Lunch",
+      tag: "Meetings & trainings",
       perPerson: 18,
       min: 10,
       includes: [
@@ -138,24 +150,24 @@ window.PERFETTO = {
       ],
     },
     {
-      id: "cena",
-      name: "La Cena",
+      id: "dinner",
+      name: "Classic Dinner",
       tag: "Most popular",
       featured: true,
       perPerson: 28,
       min: 15,
       includes: [
         "Choose 1 pasta or lasagna",
-        "Choose 1 entrée: Chicken Marsala, Chicken Parmigiana or Eggplant Parmesan",
+        "Choose 1 entrée: Chicken Marsala, Chicken Parmesan or Eggplant Parmesan",
         "Caesar or spinach salad",
         "Garlic bread",
         "Plates, napkins & serving utensils",
       ],
     },
     {
-      id: "festa",
-      name: "La Festa",
-      tag: "Weddings & celebrations",
+      id: "celebration",
+      name: "Celebration",
+      tag: "Weddings & big parties",
       perPerson: 38,
       min: 25,
       includes: [
@@ -186,7 +198,7 @@ window.PERFETTO = {
       group: "Entrées",
       items: [
         { id: "t-marsala", name: "Chicken Marsala", half: 95, full: 180 },
-        { id: "t-chparm", name: "Chicken Parmigiana", half: 95, full: 180 },
+        { id: "t-chparm", name: "Chicken Parmesan", half: 95, full: 180 },
         { id: "t-eggparm", name: "Eggplant Parmesan", half: 85, full: 160 },
         { id: "t-scampi", name: "Shrimp Scampi", half: 120, full: 225 },
       ],
