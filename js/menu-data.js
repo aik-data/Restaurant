@@ -135,51 +135,66 @@ window.PERFETTO = {
 
   /* ---------------- CATERING ---------------- */
   // Per-person packages. Minimum guests applies to each.
-  packages: [
-    {
-      id: "lunch",
-      name: "Office Lunch",
-      tag: "Meetings & trainings",
-      perPerson: 18,
-      min: 10,
-      includes: [
-        "Choose 1 pasta: Bolognese, Alfredo, Primavera or Spaghetti & Meatballs",
-        "Caesar or garden salad",
-        "Garlic bread",
-        "Plates, napkins & serving utensils",
-      ],
-    },
-    {
-      id: "dinner",
-      name: "Classic Dinner",
-      tag: "Most popular",
-      featured: true,
-      perPerson: 28,
-      min: 15,
-      includes: [
-        "Choose 1 pasta or lasagna",
-        "Choose 1 entrée: Chicken Marsala, Chicken Parmesan or Eggplant Parmesan",
-        "Caesar or spinach salad",
-        "Garlic bread",
-        "Plates, napkins & serving utensils",
-      ],
-    },
-    {
-      id: "celebration",
-      name: "Celebration",
-      tag: "Weddings & big parties",
-      perPerson: 38,
-      min: 25,
-      includes: [
-        "Prosciutto wrapped asparagus or bruschetta to start",
-        "Choose 2 entrées, including Veal Marsala or Shrimp Scampi",
-        "Choose 1 pasta or lasagna",
-        "Choose 1 salad",
-        "Garlic bread",
-        "Mini cannoli or tiramisu",
-      ],
-    },
-  ],
+  //
+  // choices: what the guest picks from the menu in the quote form.
+  //   pick:  how many they choose from that list
+  //   label / plural: wording, e.g. "Choose 1 pasta" / "Choose 2 entrées"
+  //   hot:   true if it's served hot (used to estimate chafing dishes)
+  // included: what comes with every order of that package.
+  //
+  // Reusable dish lists, so the same names show up everywhere:
+  packages: (function () {
+    var PASTAS = ["Pasta Perfetto", "Bolognese Lasagna", "Veggie Lasagna", "Fettuccine Alfredo", "Pasta Bolognese", "Spaghetti & Meatballs", "Pasta Primavera"];
+    var LUNCH_PASTAS = ["Pasta Bolognese", "Fettuccine Alfredo", "Spaghetti & Meatballs", "Pasta Primavera"];
+    var CHICKEN_EGGPLANT = ["Chicken Marsala", "Chicken Parmesan", "Chicken Cordon Bleu", "Eggplant Parmesan"];
+    var PREMIUM_ENTREES = CHICKEN_EGGPLANT.concat(["Veal Marsala", "Veal Parmesan", "Shrimp Scampi"]);
+    var BASIC_SALADS = ["Caesar Salad", "Spinach Salad"];
+    var ALL_SALADS = BASIC_SALADS.concat(["Caprese Salad", "Tuscan Antipasto Salad"]);
+
+    return [
+      {
+        id: "lunch",
+        name: "Office Lunch",
+        tag: "Meetings & trainings",
+        perPerson: 18,
+        min: 10,
+        choices: [
+          { id: "pasta", label: "pasta", plural: "pastas", pick: 1, hot: true, options: LUNCH_PASTAS },
+          { id: "salad", label: "salad", plural: "salads", pick: 1, options: BASIC_SALADS },
+        ],
+        included: ["Garlic bread", "Plates, napkins & serving utensils"],
+      },
+      {
+        id: "dinner",
+        name: "Classic Dinner",
+        tag: "Most popular",
+        featured: true,
+        perPerson: 28,
+        min: 15,
+        choices: [
+          { id: "pasta", label: "pasta or lasagna", plural: "pastas", pick: 1, hot: true, options: PASTAS },
+          { id: "entree", label: "entrée", plural: "entrées", pick: 1, hot: true, options: CHICKEN_EGGPLANT },
+          { id: "salad", label: "salad", plural: "salads", pick: 1, options: BASIC_SALADS },
+        ],
+        included: ["Garlic bread", "Plates, napkins & serving utensils"],
+      },
+      {
+        id: "celebration",
+        name: "Celebration",
+        tag: "Weddings & big parties",
+        perPerson: 38,
+        min: 25,
+        choices: [
+          { id: "starter", label: "starter", plural: "starters", pick: 1, options: ["Prosciutto Wrapped Asparagus", "Bruschetta", "Breaded Cheese Ravioli"] },
+          { id: "entree", label: "entrée", plural: "entrées", pick: 2, hot: true, options: PREMIUM_ENTREES },
+          { id: "pasta", label: "pasta or lasagna", plural: "pastas", pick: 1, hot: true, options: PASTAS },
+          { id: "salad", label: "salad", plural: "salads", pick: 1, options: ALL_SALADS },
+          { id: "dessert", label: "dessert", plural: "desserts", pick: 1, options: ["Tiramisu", "Homemade Cannoli"] },
+        ],
+        included: ["Garlic bread", "Plates, napkins & serving utensils"],
+      },
+    ];
+  })(),
 
   // Trays: half pan serves ~8–10, full pan ~18–22
   trays: [
