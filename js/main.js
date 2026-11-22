@@ -149,6 +149,12 @@
     }).join("") + "</tbody></table></div>");
   $("#trays").innerHTML = trayCards.join("");
 
+  var pay = D.payment;
+  $("#payment").innerHTML = '<h3 class="sub-title" id="payTitle">' + esc(pay.title) + '</h3><ol class="pay-steps">' +
+    pay.steps.map(function (s, i) {
+      return '<li><span class="pay-n">' + (i + 1) + "</span><div><h4>" + esc(s.title) + "</h4><p>" + esc(s.text) + "</p></div></li>";
+    }).join("") + '</ol><p class="pay-note">' + esc(pay.note) + "</p>";
+
   $("#terms").innerHTML = D.cateringTerms.map(function (t) {
     return "<div><h4>" + esc(t.title) + "</h4><p>" + esc(t.text) + "</p></div>";
   }).join("");
@@ -405,7 +411,7 @@
       }).then(function (res) {
         if (!res.ok) throw new Error("bad status");
         msg.className = "form-msg ok";
-        msg.textContent = "Thank you! Your request was sent. We'll contact you within one business day to confirm.";
+        msg.textContent = "Thank you! Your request was sent. We'll contact you within one business day to confirm, then email you a secure invoice for payment.";
         form.reset();
         update();
       }).catch(function () {

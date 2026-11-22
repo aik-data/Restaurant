@@ -246,7 +246,19 @@ window.PERFETTO = {
   cateringTerms: [
     { title: "Notice", text: "48 hours for most orders. One week for groups over 50." },
     { title: "Pickup or delivery", text: "Free pickup on Green St. $25 delivery in the Tehachapi area. Ask us about Mojave, Cal City and Bakersfield." },
-    { title: "Deposit", text: "25% deposit holds your date for events of 50+ guests." },
+    { title: "Changes", text: "Final headcount and menu due 3 days before your event." },
     { title: "Dietary needs", text: "Vegetarian dishes on every package. Vegan and gluten-conscious options on request." },
   ],
+
+  // How guests pay. Invoices are sent from the Clover dashboard:
+  // Virtual Terminal → Send Invoice.
+  payment: {
+    title: "Paying for your catering",
+    steps: [
+      { title: "No payment to request a quote", text: "Send your request and we'll call or email to confirm the date, headcount and menu." },
+      { title: "Pay by secure email invoice", text: "Once confirmed, we email you an invoice. Pay by credit or debit card from your phone or computer in about a minute." },
+      { title: "Deposits for big events", text: "Events of 50+ guests: a 25% deposit holds your date. The balance is invoiced 3 days before the event." },
+    ],
+    note: "Prefer to pay in person? Stop by the restaurant during dinner hours, Tuesday – Saturday.",
+  },
 };

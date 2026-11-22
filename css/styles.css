@@ -267,6 +267,17 @@ a.fact-v:hover { text-decoration: underline; }
 .tray-table td { padding: .38rem 0; border-top: 1px solid rgba(255,255,255,.1); color: rgba(255,255,255,.92); }
 .tray-table td + td { text-align: right; padding-left: .6rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
 
+.payment { background: rgba(255,255,255,.05); border: 1px solid rgba(198,154,75,.45); border-radius: var(--radius); padding: 1.8rem 1.8rem 1.4rem; margin-bottom: 3rem; }
+.payment .sub-title { margin-bottom: 1.2rem; }
+.pay-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; list-style: none; padding: 0; margin: 0 0 1.2rem; }
+.pay-steps li { display: flex; gap: .9rem; align-items: flex-start; }
+.pay-n { flex: 0 0 auto; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; border: 1.5px solid var(--gold); color: var(--gold); font-family: var(--serif); font-weight: 700; font-size: 1.15rem; }
+.pay-steps h4 { font-family: var(--serif); font-size: 1.25rem; font-weight: 600; color: #fff; margin: 0 0 .25rem; }
+.pay-steps p { font-size: .9rem; color: rgba(255,255,255,.78); margin: 0; }
+.pay-note { font-size: .88rem; color: rgba(255,255,255,.65); margin: 0; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,.1); }
+.pay-hint { font-size: .8rem; color: var(--ink-soft); background: #fff; border-radius: 10px; padding: .6rem .75rem; margin: .8rem 0 0; }
+@media (max-width: 820px) { .pay-steps { grid-template-columns: 1fr; } .payment { padding: 1.4rem 1.2rem 1.1rem; } }
+
 .terms { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,.14); }
 .terms h4 { font: 600 .78rem var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--gold); margin: 0 0 .35rem; }
 .terms p { font-size: .9rem; color: rgba(255,255,255,.78); margin: 0; }

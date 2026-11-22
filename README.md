@@ -37,6 +37,17 @@ Open `index.html` in any browser. No build step, no install.
 - [ ] Real food photos, plus a logo if they have one
 - [ ] Remove the yellow "Prototype" banner in `index.html` once everything is confirmed
 
+## Taking payment (Clover invoices)
+
+The site tells customers: no payment to request a quote, then a secure email invoice once the order is confirmed. To send one:
+
+1. Log in to the Clover web dashboard.
+2. Go to **Virtual Terminal → Send Invoice**.
+3. Enter the amount and the customer's email, and paste the order summary from the quote request into the note or description, if there's a field for it.
+4. Events of 50+ guests: invoice a 25% deposit when booking, then the balance 3 days before the event.
+
+The wording is in the `payment` section of `js/menu-data.js`.
+
 ## Make the quote form actually send
 
 Right now the form shows what *would* be sent. To get requests by email:
