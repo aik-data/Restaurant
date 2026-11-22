@@ -61,7 +61,7 @@
         <li><a href="#menu">Menu</a></li>
         <li><a href="#catering">Catering</a></li>
         <li><a href="#visit">Visit</a></li>
-        <li><a href="#quote" class="btn btn-small">Get a Catering Quote</a></li>
+        <li><a href="order.html" class="btn btn-small">Order Catering</a></li>
       </ul>
     </nav>
   </header>
@@ -126,6 +126,7 @@
           <p class="eyebrow">Catering by Perfetto</p>
           <h2 id="catTitle">Feed your whole group, the easy way.</h2>
           <p class="section-lede">Lasagna, pasta and chicken marsala travel beautifully. We cook it fresh in our Green Street kitchen and have it hot and ready when you are, for 10 guests or 200.</p>
+          <a href="order.html" class="btn">Start a Catering Order</a>
         </div>
 
         <ul class="occasions">
@@ -153,100 +154,15 @@
         <div class="payment" id="payment" aria-labelledby="payTitle"></div>
 
         <div class="terms" id="terms"></div>
-      </div>
-    </section>
 
-    <!-- QUOTE BUILDER -->
-    <section class="quote wrap" id="quote" aria-labelledby="quoteTitle">
-      <div class="section-head">
-        <p class="eyebrow">Request a quote</p>
-        <h2 id="quoteTitle">Build your catering order</h2>
-        <p class="section-lede">Get a live estimate as you choose. No payment now: we'll confirm the details with you, then email a secure invoice.</p>
-      </div>
-
-      <form class="quote-form" id="quoteForm" novalidate>
-        <div class="quote-main">
-          <fieldset>
-            <legend>Your event</legend>
-            <div class="grid-2">
-              <label>Event type
-                <select name="eventType" required>
-                  <option value="">Choose one</option>
-                  <option>Office lunch / meeting</option>
-                  <option>Wedding / rehearsal dinner</option>
-                  <option>Team dinner / banquet</option>
-                  <option>Church / community event</option>
-                  <option>Birthday / graduation</option>
-                  <option>Holiday party</option>
-                  <option>Other</option>
-                </select>
-              </label>
-              <label>Event date
-                <input type="date" name="date" required>
-              </label>
-              <label>Number of guests
-                <input type="number" name="guests" min="1" max="1000" value="20" required inputmode="numeric">
-              </label>
-              <label>Serving time
-                <input type="time" name="time">
-              </label>
-            </div>
-          </fieldset>
-
-          <fieldset>
-            <legend>Package <span class="optional">(optional)</span></legend>
-            <div class="pkg-choices" id="pkgChoices"></div>
-            <div class="pkg-builder" id="pkgBuilder" hidden></div>
-          </fieldset>
-
-          <fieldset>
-            <legend>Add trays & extras <span class="optional">(optional)</span></legend>
-            <div class="tray-picker" id="trayPicker"></div>
-          </fieldset>
-
-          <fieldset>
-            <legend>Pickup or delivery</legend>
-            <div class="radio-row">
-              <label class="radio"><input type="radio" name="fulfillment" value="pickup" checked> Pickup on Green St <span class="muted">(free)</span></label>
-              <label class="radio"><input type="radio" name="fulfillment" value="delivery"> Delivery <span class="muted" id="deliveryFeeLabel"></span></label>
-            </div>
-            <label class="check"><input type="checkbox" name="chafers"> Add disposable chafing dishes <span class="muted" id="chaferLabel"></span></label>
-            <label class="full delivery-addr" hidden>Delivery address
-              <input type="text" name="address" autocomplete="street-address">
-            </label>
-          </fieldset>
-
-          <fieldset>
-            <legend>Your contact info</legend>
-            <div class="grid-2">
-              <label>Name
-                <input type="text" name="name" required autocomplete="name">
-              </label>
-              <label>Phone
-                <input type="tel" name="phone" required autocomplete="tel">
-              </label>
-              <label class="full">Email
-                <input type="email" name="email" required autocomplete="email">
-              </label>
-              <label class="full">Dietary needs or special requests <span class="optional">(optional)</span>
-                <textarea name="notes" rows="3" placeholder="e.g. 4 vegetarians, one nut allergy, deliver to the 2nd floor conference room"></textarea>
-              </label>
-            </div>
-          </fieldset>
+        <div class="order-cta">
+          <div>
+            <h3>Ready to order?</h3>
+            <p>Pick your package and dishes, see your estimate, and send your request. Takes about 2 minutes, and there's no payment now.</p>
+          </div>
+          <a href="order.html" class="btn btn-large">Start Your Catering Order <span aria-hidden="true">→</span></a>
         </div>
-
-        <aside class="quote-summary" aria-live="polite">
-          <h3>Your estimate</h3>
-          <ul class="summary-lines" id="summaryLines"><li class="muted">Choose a package or trays to see an estimate.</li></ul>
-          <div class="summary-total"><span>Estimated total</span><strong id="summaryTotal">$0</strong></div>
-          <p class="summary-pp" id="summaryPP"></p>
-          <p class="fine">Before tax and gratuity. Final pricing confirmed by Perfetto.</p>
-          <p class="pay-hint"><span aria-hidden="true">🔒</span> Nothing is charged when you send this. After we confirm, you'll get a secure invoice by email to pay by card.</p>
-          <button type="submit" class="btn btn-block">Send Quote Request</button>
-          <p class="fine">Prefer to talk? Call <a href="tel:+16618221711">(661) 822-1711</a></p>
-          <div class="form-msg" id="formMsg" role="status"></div>
-        </aside>
-      </form>
+      </div>
     </section>
 
     <!-- VISIT -->
@@ -288,15 +204,16 @@
         <p>209 S Green St, Tehachapi, CA 93561<br><a href="tel:+16618221711">(661) 822-1711</a></p>
       </div>
       <div>
-        <p><a href="#menu">Menu</a> · <a href="#catering">Catering</a> · <a href="#quote">Quote</a> · <a href="#visit">Visit</a></p>
+        <p><a href="#menu">Menu</a> · <a href="#catering">Catering</a> · <a href="order.html">Order Catering</a> · <a href="#visit">Visit</a></p>
       </div>
     </div>
     <p class="wrap copyright">© <span id="year"></span> Perfetto Italian Restaurant</p>
   </footer>
 
-  <a href="#quote" class="mobile-cta">Catering Quote</a>
+  <a href="order.html" class="mobile-cta">Order Catering</a>
 
   <script src="js/menu-data.js"></script>
-  <script src="js/main.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/home.js"></script>
 </body>
 </html>

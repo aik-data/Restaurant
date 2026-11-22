@@ -1,6 +1,9 @@
 # Perfetto Italian Restaurant: Website Prototype
 
-A one-page website for **Perfetto Italian Restaurant**, 209 S Green St, Tehachapi, CA. It includes the dinner menu, catering packages and trays, and a catering quote builder that gives a live estimate.
+A website for **Perfetto Italian Restaurant**, 209 S Green St, Tehachapi, CA, with two pages:
+
+- **Home** (`index.html`): dinner menu, reviews, catering packages, trays, payment info and visit details
+- **Catering order** (`order.html`): the order builder. Customers choose a package and dishes, add trays, see a live estimate and send their request. Package buttons on the home page link to `order.html?package=dinner` (etc.), which preselects that package.
 
 ## Preview it
 
@@ -10,10 +13,13 @@ Open `index.html` in any browser. No build step, no install.
 
 | File | What it is |
 |---|---|
-| `index.html` | Page layout and text |
-| `css/styles.css` | Look and feel |
+| `index.html` | Home page layout and text |
+| `order.html` | Catering order page |
+| `css/styles.css` | Look and feel for both pages |
 | `js/menu-data.js` | **All menu items, prices, catering packages, trays, hours and contact info. Edit this file to change content.** |
-| `js/main.js` | Menu tabs, quote calculator, form sending |
+| `js/common.js` | Shared by both pages: navigation, banner, helpers |
+| `js/home.js` | Home page: menu tabs, package cards, trays, reviews |
+| `js/order.js` | Order page: dish picker, estimate, form sending |
 
 ## What's verified vs. what needs the owners
 

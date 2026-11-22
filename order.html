@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Order Catering | Perfetto Italian Restaurant, Tehachapi</title>
+  <meta name="description" content="Build your catering order from Perfetto Italian Restaurant in Tehachapi. Choose a package and dishes, see a live estimate and send your request.">
+  <meta name="theme-color" content="#7a1f1f">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="order-page">
+
+  <div class="proto-banner" id="protoBanner" role="note">
+    <span><strong>Prototype</strong>: menu items marked "—" need prices, and catering prices are suggestions to confirm.</span>
+    <button type="button" aria-label="Dismiss prototype notice" id="protoClose">&times;</button>
+  </div>
+
+  <header class="site-header" id="top">
+    <nav class="nav wrap" aria-label="Main">
+      <a href="index.html" class="brand" aria-label="Perfetto home">
+        <span class="brand-mark">Perfetto</span>
+        <span class="brand-sub">Italian Restaurant</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navLinks">
+        <span class="sr-only">Menu</span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html#menu">Menu</a></li>
+        <li><a href="index.html#catering">Catering Info</a></li>
+        <li><a href="index.html#visit">Visit</a></li>
+        <li><a href="tel:+16618221711" class="btn btn-small">Call (661) 822-1711</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="order-hero">
+      <div class="wrap">
+        <a href="index.html#catering" class="back-link"><span aria-hidden="true">←</span> Catering packages &amp; info</a>
+        <h1>Build your catering order</h1>
+        <p class="section-lede">Choose a package and your dishes, add trays if you like, and see your estimate as you go. No payment now: we'll confirm the details with you, then email a secure invoice.</p>
+        <ol class="order-progress" aria-label="Steps">
+          <li>Event details</li>
+          <li>Package &amp; dishes</li>
+          <li>Trays &amp; extras</li>
+          <li>Pickup or delivery</li>
+          <li>Your info</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="quote wrap" id="quote" aria-label="Catering order form">
+      <form class="quote-form" id="quoteForm" novalidate>
+        <div class="quote-main">
+          <fieldset>
+            <legend>Your event</legend>
+            <div class="grid-2">
+              <label>Event type
+                <select name="eventType" required>
+                  <option value="">Choose one</option>
+                  <option>Office lunch / meeting</option>
+                  <option>Wedding / rehearsal dinner</option>
+                  <option>Team dinner / banquet</option>
+                  <option>Church / community event</option>
+                  <option>Birthday / graduation</option>
+                  <option>Holiday party</option>
+                  <option>Other</option>
+                </select>
+              </label>
+              <label>Event date
+                <input type="date" name="date" required>
+              </label>
+              <label>Number of guests
+                <input type="number" name="guests" min="1" max="1000" value="20" required inputmode="numeric">
+              </label>
+              <label>Serving time
+                <input type="time" name="time">
+              </label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Package <span class="optional">(optional)</span></legend>
+            <div class="pkg-choices" id="pkgChoices"></div>
+            <div class="pkg-builder" id="pkgBuilder" hidden></div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Add trays & extras <span class="optional">(optional)</span></legend>
+            <div class="tray-picker" id="trayPicker"></div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Pickup or delivery</legend>
+            <div class="radio-row">
+              <label class="radio"><input type="radio" name="fulfillment" value="pickup" checked> Pickup on Green St <span class="muted">(free)</span></label>
+              <label class="radio"><input type="radio" name="fulfillment" value="delivery"> Delivery <span class="muted" id="deliveryFeeLabel"></span></label>
+            </div>
+            <label class="check"><input type="checkbox" name="chafers"> Add disposable chafing dishes <span class="muted" id="chaferLabel"></span></label>
+            <label class="full delivery-addr" hidden>Delivery address
+              <input type="text" name="address" autocomplete="street-address">
+            </label>
+          </fieldset>
+
+          <fieldset>
+            <legend>Your contact info</legend>
+            <div class="grid-2">
+              <label>Name
+                <input type="text" name="name" required autocomplete="name">
+              </label>
+              <label>Phone
+                <input type="tel" name="phone" required autocomplete="tel">
+              </label>
+              <label class="full">Email
+                <input type="email" name="email" required autocomplete="email">
+              </label>
+              <label class="full">Dietary needs or special requests <span class="optional">(optional)</span>
+                <textarea name="notes" rows="3" placeholder="e.g. 4 vegetarians, one nut allergy, deliver to the 2nd floor conference room"></textarea>
+              </label>
+            </div>
+          </fieldset>
+        </div>
+
+        <aside class="quote-summary" aria-live="polite">
+          <h3>Your estimate</h3>
+          <ul class="summary-lines" id="summaryLines"><li class="muted">Choose a package or trays to see an estimate.</li></ul>
+          <div class="summary-total"><span>Estimated total</span><strong id="summaryTotal">$0</strong></div>
+          <p class="summary-pp" id="summaryPP"></p>
+          <p class="fine">Before tax and gratuity. Final pricing confirmed by Perfetto.</p>
+          <p class="pay-hint"><span aria-hidden="true">🔒</span> Nothing is charged when you send this. After we confirm, you'll get a secure invoice by email to pay by card.</p>
+          <button type="submit" class="btn btn-block">Send Quote Request</button>
+          <p class="fine">Prefer to talk? Call <a href="tel:+16618221711">(661) 822-1711</a></p>
+          <div class="form-msg" id="formMsg" role="status"></div>
+        </aside>
+      </form>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <span class="brand-mark light">Perfetto</span>
+        <p class="muted-light">Homemade Italian in downtown Tehachapi.</p>
+      </div>
+      <div>
+        <p>209 S Green St, Tehachapi, CA 93561<br><a href="tel:+16618221711">(661) 822-1711</a></p>
+      </div>
+      <div>
+        <p><a href="index.html">Home</a> · <a href="index.html#menu">Menu</a> · <a href="index.html#catering">Catering</a> · <a href="order.html">Order Catering</a> · <a href="index.html#visit">Visit</a></p>
+      </div>
+    </div>
+    <p class="wrap copyright">© <span id="year"></span> Perfetto Italian Restaurant</p>
+  </footer>
+
+  <script src="js/menu-data.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/order.js"></script>
+</body>
+</html>

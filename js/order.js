@@ -1,6 +1,7 @@
-/* Perfetto Italian Restaurant — page behavior */
+/* Perfetto Italian Restaurant — catering order page */
 (function () {
   "use strict";
+  var PF = window.PF, D = PF.D, $ = PF.$, $$ = PF.$$, money = PF.money, esc = PF.esc, choiceTitle = PF.choiceTitle;
 
   /*
    * Where quote requests go.
@@ -9,155 +10,6 @@
    * request summary and asks the guest to call.
    */
   var FORM_ENDPOINT = "";
-
-  var D = window.PERFETTO;
-  var $ = function (sel, root) { return (root || document).querySelector(sel); };
-  var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
-  var money = function (n) { return "$" + Math.round(n).toLocaleString("en-US"); };
-  var esc = function (s) {
-    return String(s).replace(/[&<>"']/g, function (c) {
-      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
-    });
-  };
-
-  /* ---------- Small UI bits ---------- */
-  $("#year").textContent = new Date().getFullYear();
-
-  var banner = $("#protoBanner");
-  try { if (localStorage.getItem("perfetto-proto-dismissed") === "1") banner.classList.add("hidden"); } catch (e) {}
-  $("#protoClose").addEventListener("click", function () {
-    banner.classList.add("hidden");
-    try { localStorage.setItem("perfetto-proto-dismissed", "1"); } catch (e) {}
-  });
-
-  var toggle = $(".nav-toggle");
-  var links = $("#navLinks");
-  toggle.addEventListener("click", function () {
-    var open = toggle.getAttribute("aria-expanded") === "true";
-    toggle.setAttribute("aria-expanded", String(!open));
-    links.classList.toggle("open", !open);
-  });
-  $$("#navLinks a").forEach(function (a) {
-    a.addEventListener("click", function () {
-      toggle.setAttribute("aria-expanded", "false");
-      links.classList.remove("open");
-    });
-  });
-
-  /* ---------- Hours ---------- */
-  $("#hoursList").innerHTML = D.info.hours.map(function (h) {
-    return "<dt>" + esc(h.days) + "</dt><dd>" + esc(h.time) + "</dd>";
-  }).join("");
-
-  /* ---------- Favorites ---------- */
-  var favs = [];
-  D.menu.forEach(function (sec) {
-    sec.items.forEach(function (it) { if (it.favorite) favs.push(it); });
-  });
-  $("#favGrid").innerHTML = favs.slice(0, 8).map(function (it) {
-    return '<article class="fav-card"><h3>' + esc(it.name) + "</h3>" +
-      (it.desc ? "<p>" + esc(it.desc) + "</p>" : "") +
-      (it.price != null ? '<p class="fav-price">' + money(it.price) + "</p>" : "") +
-      "</article>";
-  }).join("");
-
-  /* ---------- Reviews ---------- */
-  $("#reviewGrid").innerHTML = (D.reviews || []).map(function (r) {
-    return '<figure class="review"><div class="stars" aria-label="5 stars">★★★★★</div><blockquote>“' + esc(r.quote) +
-      '”</blockquote><figcaption>' + esc(r.source) + "</figcaption></figure>";
-  }).join("");
-
-  /* ---------- Online ordering links ---------- */
-  $$("[data-order-link]").forEach(function (a) { a.href = D.info.orderOnline; });
-  $$("[data-order-hours]").forEach(function (el) { el.textContent = D.info.orderHours; });
-
-  /* ---------- Menu tabs ---------- */
-  var tabsEl = $("#menuTabs");
-  var panelsEl = $("#menuPanels");
-
-  tabsEl.innerHTML = D.menu.map(function (sec, i) {
-    return '<button class="menu-tab" role="tab" type="button" id="tab-' + sec.id + '" aria-controls="panel-' + sec.id +
-      '" aria-selected="' + (i === 0) + '" tabindex="' + (i === 0 ? 0 : -1) + '">' + esc(sec.title) + "</button>";
-  }).join("");
-
-  panelsEl.innerHTML = D.menu.map(function (sec, i) {
-    var items = sec.items.map(function (it) {
-      var price = it.price != null
-        ? '<span class="menu-item-price">' + money(it.price) + "</span>"
-        : '<span class="menu-item-price tbd" title="Price to be confirmed">—</span>';
-      return '<li class="menu-item"><div class="menu-item-top"><span class="menu-item-name">' + esc(it.name) +
-        (it.favorite ? '<span class="badge">Favorite</span>' : "") +
-        '</span><span class="menu-item-dots" aria-hidden="true"></span>' + price + "</div>" +
-        (it.desc ? '<p class="menu-item-desc">' + esc(it.desc) + "</p>" : "") + "</li>";
-    }).join("");
-    return '<div class="menu-panel" role="tabpanel" id="panel-' + sec.id + '" aria-labelledby="tab-' + sec.id + '"' +
-      (i === 0 ? "" : " hidden") + '><div class="menu-panel-head"><h3>' + esc(sec.title) + "</h3><p>" + esc(sec.subtitle) +
-      '</p></div><ul class="menu-list">' + items + "</ul></div>";
-  }).join("");
-
-  var tabs = $$(".menu-tab", tabsEl);
-  function selectTab(tab) {
-    tabs.forEach(function (t) {
-      var on = t === tab;
-      t.setAttribute("aria-selected", String(on));
-      t.tabIndex = on ? 0 : -1;
-      $("#" + t.getAttribute("aria-controls")).hidden = !on;
-    });
-  }
-  tabs.forEach(function (tab, i) {
-    tab.addEventListener("click", function () { selectTab(tab); });
-    tab.addEventListener("keydown", function (e) {
-      var next = null;
-      if (e.key === "ArrowRight") next = tabs[(i + 1) % tabs.length];
-      if (e.key === "ArrowLeft") next = tabs[(i - 1 + tabs.length) % tabs.length];
-      if (next) { e.preventDefault(); next.focus(); selectTab(next); }
-    });
-  });
-  $("#menuNote").textContent = D.menuNote;
-
-  /* ---------- Catering: packages, trays, terms ---------- */
-  // "Choose 1 pasta", "Choose 2 entrées"
-  function choiceTitle(c) {
-    return "Choose " + c.pick + " " + (c.pick > 1 ? c.plural : c.label);
-  }
-
-  $("#packages").innerHTML = D.packages.map(function (p) {
-    return '<article class="pkg' + (p.featured ? " featured" : "") + '">' +
-      '<span class="pkg-tag">' + esc(p.tag) + "</span>" +
-      "<h4>" + esc(p.name) + "</h4>" +
-      '<div class="pkg-price">' + money(p.perPerson) + " <span>per person</span></div>" +
-      '<p class="pkg-min">Minimum ' + p.min + " guests</p>" +
-      "<ul>" +
-        p.choices.map(function (c) {
-          return "<li><strong>" + esc(choiceTitle(c)) + '</strong><span class="pkg-opts">' + c.options.map(esc).join(" · ") + "</span></li>";
-        }).join("") +
-        p.included.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") +
-      "</ul>" +
-      '<a href="#quote" class="btn' + (p.featured ? "" : " btn-ghost-dark") + '" data-pick="' + p.id + '">Choose ' + esc(p.name) + "</a>" +
-      "</article>";
-  }).join("");
-
-  var trayCards = D.trays.map(function (g) {
-    return '<div class="tray-card"><h4>' + esc(g.group) + '</h4><table class="tray-table"><thead><tr><th scope="col">Item</th><th scope="col">Half</th><th scope="col">Full</th></tr></thead><tbody>' +
-      g.items.map(function (t) {
-        return "<tr><td>" + esc(t.name) + "</td><td>" + money(t.half) + "</td><td>" + money(t.full) + "</td></tr>";
-      }).join("") + "</tbody></table></div>";
-  });
-  trayCards.push('<div class="tray-card"><h4>Starters, Bread &amp; Desserts</h4><table class="tray-table"><thead><tr><th scope="col">Item</th><th scope="col">Price</th></tr></thead><tbody>' +
-    D.extras.map(function (x) {
-      return "<tr><td>" + esc(x.name) + "</td><td>" + money(x.price) + (x.unit === "dozen" ? "/dz" : "") + "</td></tr>";
-    }).join("") + "</tbody></table></div>");
-  $("#trays").innerHTML = trayCards.join("");
-
-  var pay = D.payment;
-  $("#payment").innerHTML = '<h3 class="sub-title" id="payTitle">' + esc(pay.title) + '</h3><ol class="pay-steps">' +
-    pay.steps.map(function (s, i) {
-      return '<li><span class="pay-n">' + (i + 1) + "</span><div><h4>" + esc(s.title) + "</h4><p>" + esc(s.text) + "</p></div></li>";
-    }).join("") + '</ol><p class="pay-note">' + esc(pay.note) + "</p>";
-
-  $("#terms").innerHTML = D.cateringTerms.map(function (t) {
-    return "<div><h4>" + esc(t.title) + "</h4><p>" + esc(t.text) + "</p></div>";
-  }).join("");
 
   /* ---------- Quote builder ---------- */
   var form = $("#quoteForm");
@@ -241,13 +93,12 @@
   minDate.setDate(minDate.getDate() + 2);
   form.date.min = minDate.toISOString().slice(0, 10);
 
-  // "Choose package" buttons preselect it in the form
-  $$("[data-pick]").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      var r = form.querySelector('input[name="package"][value="' + btn.dataset.pick + '"]');
-      if (r) { r.checked = true; update(); }
-    });
-  });
+  // Preselect a package when arriving from a package card (order.html?package=dinner)
+  try {
+    var wanted = new URLSearchParams(window.location.search).get("package");
+    var preset = wanted && form.querySelector('input[name="package"][value="' + wanted.replace(/[^a-z0-9-]/gi, "") + '"]');
+    if (preset) preset.checked = true;
+  } catch (e) {}
 
   var trayIndex = {};
   D.trays.forEach(function (g) { g.items.forEach(function (t) { trayIndex[t.id] = t; }); });
@@ -435,12 +286,4 @@
     msg.innerHTML = "<strong>Prototype mode:</strong> this request wasn't sent yet (no form service is connected). Here's what the restaurant would receive:" +
       '<pre style="white-space:pre-wrap;font-size:.78rem;margin:.6rem 0 0;font-family:inherit">' + esc(text) + "</pre>";
   });
-
-  /* ---------- Hide mobile CTA when the quote form is on screen ---------- */
-  var mobileCta = $(".mobile-cta");
-  if ("IntersectionObserver" in window) {
-    new IntersectionObserver(function (entries) {
-      entries.forEach(function (en) { mobileCta.classList.toggle("hide", en.isIntersecting); });
-    }, { threshold: 0.05 }).observe($("#quote"));
-  }
 })();
