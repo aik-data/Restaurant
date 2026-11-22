@@ -13,16 +13,18 @@
  * SUGGESTED starting points for the owners to adjust.
  */
 
-window.PERFETTO = {
+(typeof window !== "undefined" ? window : globalThis).PERFETTO = {
   info: {
     name: "Perfetto Italian Restaurant",
     address: "209 S Green St",
     city: "Tehachapi, CA 93561",
     phone: "(661) 822-1711",
     phoneHref: "tel:+16618221711",
-    email: "",
     orderOnline: "https://order.online/store/perfetto-italian-restaurant-209-s-green-st-1177349", // their existing pickup ordering page
-    orderHours: "Online pickup orders 4:30 – 6:50 PM", // TODO: add a catering inbox, e.g. catering@perfettotehachapi.com
+    orderHours: "Online pickup orders 4:30 – 6:50 PM",
+    // Where the catering order form sends requests (the email backend).
+    // Leave empty until the backend is set up: the form then shows a preview instead of sending.
+    cateringEndpoint: "",
     mapsQuery: "Perfetto Italian Restaurant, 209 S Green St, Tehachapi, CA 93561",
     hours: [
       { days: "Tuesday – Saturday", time: "4:30 – 8:00 PM" },
@@ -262,3 +264,6 @@ window.PERFETTO = {
     note: "Prefer to pay in person? Stop by the restaurant during dinner hours, Tuesday – Saturday.",
   },
 };
+
+// Lets server-side code (the email backend) read the same menu and prices
+if (typeof module !== "undefined" && module.exports) module.exports = globalThis.PERFETTO;

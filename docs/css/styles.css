@@ -472,3 +472,6 @@ address { font-style: normal; font-size: 1.05rem; margin-bottom: 1.4rem; }
   .order-cta .btn { width: 100%; }
   .order-page .site-footer { padding-bottom: 1.2rem; }
 }
+
+/* Spam-trap field on the order form: off-screen for people */
+.hp-field { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }

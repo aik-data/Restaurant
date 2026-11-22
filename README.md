@@ -1,25 +1,26 @@
 # Perfetto Italian Restaurant: Website Prototype
 
-A website for **Perfetto Italian Restaurant**, 209 S Green St, Tehachapi, CA, with two pages:
+A website for **Perfetto Italian Restaurant**, 209 S Green St, Tehachapi, CA. The site lives in the `docs/` folder (GitHub Pages publishes from there) and has two pages:
 
 - **Home** (`index.html`): dinner menu, reviews, catering packages, trays, payment info and visit details
 - **Catering order** (`order.html`): the order builder. Customers choose a package and dishes, add trays, see a live estimate and send their request. Package buttons on the home page link to `order.html?package=dinner` (etc.), which preselects that package.
 
 ## Preview it
 
-Open `index.html` in any browser. No build step, no install.
+Open `docs/index.html` in any browser. No build step, no install.
 
 ## Files
 
 | File | What it is |
 |---|---|
-| `index.html` | Home page layout and text |
-| `order.html` | Catering order page |
-| `css/styles.css` | Look and feel for both pages |
-| `js/menu-data.js` | **All menu items, prices, catering packages, trays, hours and contact info. Edit this file to change content.** |
-| `js/common.js` | Shared by both pages: navigation, banner, helpers |
-| `js/home.js` | Home page: menu tabs, package cards, trays, reviews |
-| `js/order.js` | Order page: dish picker, estimate, form sending |
+| `docs/index.html` | Home page layout and text |
+| `docs/order.html` | Catering order page |
+| `docs/css/styles.css` | Look and feel for both pages |
+| `docs/js/menu-data.js` | **All menu items, prices, catering packages, trays, hours and contact info. Edit this file to change content.** |
+| `docs/js/estimate.js` | Catering price calculator (shared with the email backend so totals always match) |
+| `docs/js/common.js` | Shared by both pages: navigation, banner, helpers |
+| `docs/js/home.js` | Home page: menu tabs, package cards, trays, reviews |
+| `docs/js/order.js` | Order page: dish picker, estimate, form sending |
 
 ## What's verified vs. what needs the owners
 
@@ -39,7 +40,7 @@ Open `index.html` in any browser. No build step, no install.
 - [ ] Remove any dishes no longer served, and add missing ones
 - [ ] **Catering prices.** All package and tray prices are *suggestions* based on the dine-in prices. Check them against food cost.
 - [ ] Catering rules: notice, delivery area and fee, deposit, minimums
-- [ ] A catering email inbox (set `email` in `js/menu-data.js`)
+- [ ] A catering email inbox for new requests
 - [ ] Real food photos, plus a logo if they have one
 - [ ] Remove the yellow "Prototype" banner in `index.html` once everything is confirmed
 
@@ -52,24 +53,23 @@ The site tells customers: no payment to request a quote, then a secure email inv
 3. Enter the amount and the customer's email, and paste the order summary from the quote request into the note or description, if there's a field for it.
 4. Events of 50+ guests: invoice a 25% deposit when booking, then the balance 3 days before the event.
 
-The wording is in the `payment` section of `js/menu-data.js`.
+The wording is in the `payment` section of `docs/js/menu-data.js`.
 
-## Make the quote form actually send
+## Emails (catering requests and confirmations)
 
-Right now the form shows what *would* be sent. To get requests by email:
+The order form sends to an email backend that uses **Resend** to email the restaurant the order and send the customer a confirmation. The Resend key must stay secret, so it lives in the backend, never in this repo.
 
-1. Make a free account at https://formspree.io and create a form, using the restaurant's email.
-2. Copy the form endpoint (looks like `https://formspree.io/f/abcdwxyz`).
-3. Paste it into `FORM_ENDPOINT` at the top of `js/main.js`.
+Until the backend is connected, the form shows a preview of the request instead of sending. When it's ready, put its URL in `cateringEndpoint` in `docs/js/menu-data.js`.
 
-Simpler option: set `email` in `js/menu-data.js`. The form will then open the guest's email app with the request filled in.
+## Put it online (GitHub Pages, free)
 
-## Put it online (free)
+1. Merge the work into `main`.
+2. Repo **Settings → Pages → Build and deployment**: Source **Deploy from a branch**, branch **`main`**, folder **`/docs`**. Save.
+3. The site appears at `https://<owner>.github.io/restaurant/` in about a minute. Every change pushed to `main` updates it.
+4. Optional: buy a domain (e.g. `perfettotehachapi.com`, about $12/yr) and add it under **Settings → Pages → Custom domain**. GitHub provides HTTPS.
+5. Add the web address to the Google Business Profile.
 
-- **GitHub Pages:** repo Settings → Pages → deploy from the `main` branch, root folder.
-- **Netlify:** drag the folder onto https://app.netlify.com/drop.
-
-Then buy a domain (e.g. `perfettotehachapi.com`, about $12/yr) and point it at the host. Add the URL to the Google Business Profile.
+The repo needs to be public for free GitHub Pages. Nothing secret is stored here.
 
 ## Suggested catering pricing logic
 
