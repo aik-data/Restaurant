@@ -57,9 +57,28 @@ The wording is in the `payment` section of `docs/js/menu-data.js`.
 
 ## Emails (catering requests and confirmations)
 
-The order form sends to an email backend that uses **Resend** to email the restaurant the order and send the customer a confirmation. The Resend key must stay secret, so it lives in the backend, never in this repo.
+The order form sends to a small **Cloudflare Worker** (`worker/`) that uses **Resend** to:
 
-Until the backend is connected, the form shows a preview of the request instead of sending. When it's ready, put its URL in `cateringEndpoint` in `docs/js/menu-data.js`.
+- email the restaurant the full order (hitting Reply goes straight to the customer)
+- email the customer a confirmation with their order and what happens next
+
+The Worker recomputes every price from `docs/js/menu-data.js`, so the totals in the emails always match the menu. It only accepts orders from the website addresses listed in `ALLOWED_ORIGINS` (in `worker/wrangler.toml`), and it has a hidden spam-trap field. The Resend key is stored as a Cloudflare secret, never in this repo.
+
+Until the Worker is connected, the form shows a preview of the request instead of sending.
+
+### One-time setup
+
+1. **Domain:** buy the restaurant's domain (e.g. `perfettotehachapi.com`). Cloudflare Registrar sells domains at cost, and keeping DNS on Cloudflare makes the next step easy.
+2. **Resend:** sign up at resend.com, add the domain, and add the DNS records Resend shows you. Once the domain shows as verified, create an API key with sending access.
+3. **Deploy the Worker:** Cloudflare dashboard → **Workers & Pages → Create application → Import a repository**. Pick this GitHub repo, set the root directory (path) to `worker`, and keep the name `perfetto-catering` (it must match `wrangler.toml`). Deploy. Every push to the production branch redeploys it.
+4. **Add the settings** (the Worker → **Settings → Variables and Secrets**, type **Secret**):
+   - `RESEND_API_KEY`: the Resend key
+   - `CATERING_TO_EMAIL`: where requests go (comma-separate for more than one)
+   - `CATERING_FROM_EMAIL`: e.g. `Perfetto Catering <catering@perfettotehachapi.com>` (must be on the verified domain)
+5. **Connect the site:** copy the Worker's address (`https://perfetto-catering.<your-subdomain>.workers.dev`) into `cateringEndpoint` in `docs/js/menu-data.js`.
+6. **Custom domain for the site?** Add it to `ALLOWED_ORIGINS` in `worker/wrangler.toml`, e.g. `"https://aik-data.github.io,https://perfettotehachapi.com,https://www.perfettotehachapi.com"`.
+
+Resend's free plan covers 100 emails a day and 3,000 a month. Each order uses 2.
 
 ## Put it online (GitHub Pages, free)
 

@@ -1,0 +1,13 @@
+# Cloudflare Worker that emails catering requests through Resend.
+# Secrets (RESEND_API_KEY, CATERING_TO_EMAIL, CATERING_FROM_EMAIL) are set in
+# the Cloudflare dashboard, never in this file: this repo is public.
+
+name = "perfetto-catering"
+main = "src/index.js"
+compatibility_date = "2025-11-01"
+
+[vars]
+# Websites allowed to send orders, comma-separated, no trailing slash.
+# Add the custom domain here once there is one, e.g.
+# "https://aik-data.github.io,https://perfettotehachapi.com,https://www.perfettotehachapi.com"
+ALLOWED_ORIGINS = "https://aik-data.github.io"
