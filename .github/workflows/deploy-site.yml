@@ -1,0 +1,91 @@
+# Rebuilds the website from site/ and publishes it to GitHub Pages
+# whenever a change to site/ lands on main, or when you press
+# "Run workflow" on the Actions tab.
+#
+# One-time setup: Settings -> Pages -> Build and deployment -> Source:
+# "GitHub Actions". Until then the site is built but not published.
+name: Deploy site
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - ".github/workflows/deploy-site.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One publish at a time; a newer change waits for the current one
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: site
+    outputs:
+      pages_mode: ${{ steps.pages.outputs.mode }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          check-latest: true
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Type check
+        run: npm run check
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload the built site
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: site/dist
+
+      - name: Check how GitHub Pages publishes
+        id: pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mode=$(gh api "repos/$GITHUB_REPOSITORY/pages" --jq .build_type 2>/dev/null || echo unknown)
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
+          if [ "$mode" = "legacy" ]; then
+            echo "::warning title=One step left::GitHub Pages still publishes the docs folder. Open Settings > Pages, set Source to GitHub Actions, then run this workflow again."
+            {
+              echo "### Built, not published yet"
+              echo "Open **Settings > Pages** and set **Source** to **GitHub Actions**, then press **Run workflow** on the Actions tab."
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "### Built. Publishing to GitHub Pages." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  deploy:
+    name: Publish
+    needs: build
+    # Skipped only while Pages is still set to publish the docs folder
+    if: needs.build.outputs.pages_mode != 'legacy'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

@@ -4,7 +4,9 @@
  * Shared by the website (Astro/React) and the email Worker.
  * Edit this one file to change the menu, catering packages,
  * tray prices, hours or contact details. Everything on the page
- * is generated from the data below.
+ * is generated from the data below. Once a change is on main
+ * (for example, edited and committed on github.com), the site
+ * rebuilds and republishes itself in about two minutes.
  *
  *   price: number  -> shown as $12
  *   price: null    -> price not confirmed yet (shown as "—")

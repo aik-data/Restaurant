@@ -13,7 +13,8 @@
  *   2. Cloudflare dashboard → Workers & Pages → Create application → Import a
  *      repository → this repo, root directory "worker", name "perfetto-catering".
  *   3. Add the three secrets below, then put the Worker's URL in
- *      cateringEndpoint in site/src/lib/menu-data.js, then rebuild the site.
+ *      cateringEndpoint in site/src/lib/menu-data.js (the website rebuilds
+ *      itself once that change is on main).
  *
  * Menu, prices and the estimate logic come from site/src/lib (shared with the website).
  *

@@ -1,5 +1,6 @@
-# dependencies and build caches
+# dependencies, build output and caches
 node_modules/
+site/dist/
 site/.astro/
 .wrangler/
 .DS_Store

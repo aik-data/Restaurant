@@ -7,7 +7,8 @@
  * To change the password: replace PASSWORD_SHA256 with the SHA-256
  * hash of the new password (lowercase hex).
  * To launch the site: in site/src/layouts/Layout.astro delete the
- * gate.js <script> line and the robots "noindex" meta tag, then rebuild.
+ * gate.js <script> line and the robots "noindex" meta tag. The site
+ * rebuilds and republishes itself once the change is on main.
  */
 (function () {
   "use strict";
