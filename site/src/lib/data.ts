@@ -33,7 +33,7 @@ export type Package = {
 export type Tray = { id: string; name: string; half: number; full: number };
 export type Extra = { id: string; name: string; unit: string; price: number; note?: string };
 export type Photo = { src: string; alt?: string; pexels?: number };
-export type Schedule = { days: number[]; open: string; close: string; timeZone: string };
+export type Schedule = { days: number[]; open: string; close: string; timeZone: string; closed?: string[] };
 
 export type SiteData = {
   info: {

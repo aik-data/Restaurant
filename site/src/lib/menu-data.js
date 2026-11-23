@@ -34,7 +34,12 @@ export const PERFETTO = {
       { days: "Sunday & Monday", time: "Closed" },
     ],
     // Same hours, for the live "open now" sign (0 = Sunday … 6 = Saturday, 24-hour times)
-    schedule: { days: [2, 3, 4, 5, 6], open: "16:30", close: "20:00", timeZone: "America/Los_Angeles" },
+    schedule: {
+      days: [2, 3, 4, 5, 6], open: "16:30", close: "20:00", timeZone: "America/Los_Angeles",
+      // Extra closed dates on normally open days (holidays, vacations), as "YYYY-MM-DD".
+      // The live open/closed sign shows these as closed. Example: ["2026-12-24", "2026-12-25"]
+      closed: [],
+    },
     cateringHours: "Catering available 7 days a week, lunch or dinner, with advance notice.",
   },
 
