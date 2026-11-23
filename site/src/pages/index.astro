@@ -1,0 +1,293 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Hero from "@/components/site/Hero";
+import DishBand from "@/components/site/DishBand";
+import SignatureGallery from "@/components/site/SignatureGallery";
+import MenuBoard from "@/components/site/MenuBoard";
+import Reviews from "@/components/site/Reviews";
+import TraysAccordion from "@/components/site/TraysAccordion";
+import OpenStatus from "@/components/site/OpenStatus";
+import Magnet from "@/components/Magnet";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
+import { D } from "@/lib/data";
+import { pic } from "@/lib/images";
+import { money, choiceTitle } from "@/lib/format";
+import { asset } from "@/lib/utils";
+
+const { info, media } = D;
+
+// Photos, sized for where they appear
+const slides = await Promise.all(media.hero.map(async (s) => ({ ...(await pic(s.src, [960, 1600, 2400], 72)), alt: s.alt })));
+const kitchen = await pic(media.kitchen.src, [600, 1000, 1067]);
+const catering = await pic(media.catering.src, [600, 1000, 1067]);
+const room = await pic("img/hero-room.jpg", [1200], 60);
+const trays = await pic(media.cateringTrays.src, [960, 1600]);
+const events = await pic(media.events.src, [960, 1600, 2400]);
+
+const byName = new Map(D.menu.flatMap((s) => s.items).map((it) => [it.name, it] as const));
+const dishes = await Promise.all(
+  media.signature
+    .filter((name) => media.dishes[name])
+    .map(async (name) => {
+      const it = byName.get(name);
+      const p = await pic(media.dishes[name].src, [480, 800]);
+      return { name, desc: it?.desc ?? "", price: it?.price ?? null, src: p.src, srcset: p.srcset };
+    })
+);
+const photos = Object.fromEntries(
+  await Promise.all(Object.entries(media.dishes).map(async ([name, m]) => [name, await pic(m.src, [520])] as const))
+);
+
+const band = ["Fresh pasta", "Bolognese lasagna", "Veal marsala", "Shrimp scampi", "Chicken parmesan", "Tiramisu"];
+const occasions = ["Office lunches & meetings", "Weddings & rehearsal dinners", "Team dinners & banquets", "Church & community events", "Graduations & birthdays", "Holiday parties"];
+const steps = [
+  { title: "Pick a package or trays", text: "Per-person packages keep it simple. Trays let you build your own spread." },
+  { title: "Send your request", text: "Tell us your date and headcount. We confirm within one business day." },
+  { title: "Pick up, or we deliver", text: "Hot, labeled and ready to serve. Chafing dishes available." },
+];
+const directions = "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent("Perfetto Italian Restaurant 209 S Green St Tehachapi CA");
+const mapSrc = "https://maps.google.com/maps?q=" + encodeURIComponent("209 S Green St, Tehachapi, CA 93561") + "&z=16&output=embed";
+const magnet = { padding: 40, magnetStrength: 4, maxOffset: 12 };
+---
+<Layout
+  page="home"
+  title="Perfetto Italian Restaurant | Downtown Tehachapi | Dinner & Catering"
+  description="Family-owned Italian restaurant in Downtown Tehachapi. Fresh pasta, lasagna, veal, seafood and tiramisu. Dinner Tuesday to Saturday, catering for offices, weddings and celebrations, and private events."
+  lcp={slides[0]}
+>
+  <Hero client:load slides={slides} schedule={info.schedule} phoneHref={info.phoneHref} />
+
+  <!-- OUR KITCHEN -->
+  <section id="story" aria-labelledby="storyTitle" class="section-y bg-night">
+    <div class="container-site grid grid-cols-[minmax(0,5fr)_minmax(0,6fr)] items-center gap-[clamp(3rem,8vw,8rem)] max-[900px]:grid-cols-1">
+      <figure class="reveal-img m-0 aspect-[4/5] rounded-[4px] max-[900px]:aspect-[4/4.4]" data-parallax="0.08">
+        <img src={kitchen.src} srcset={kitchen.srcset} sizes="(max-width: 900px) 100vw, 42vw" width={kitchen.width} height={kitchen.height} alt="Fresh tagliatelle held in a cook's hands" loading="lazy" decoding="async" class="size-full object-cover" />
+      </figure>
+      <div>
+        <p class="eyebrow mb-6" data-reveal>Our kitchen</p>
+        <h2 id="storyTitle" class="display-2 mb-6 max-w-[11ch]" data-words>Everything starts <em>with the pasta.</em></h2>
+        <p class="lede" data-reveal>Pasta made fresh in our kitchen, sauces that simmer for hours, and a lasagna built layer by layer. It's the kind of Italian cooking that's worth the trip downtown.</p>
+        <ul class="mt-11 grid list-none grid-cols-3 border-t border-border p-0 max-[560px]:grid-cols-1" data-reveal>
+          {[["Fresh", "Pasta made in house"], ["Family", "Owned and run"], ["Tue–Sat", "Dinner from 4:30"]].map(([big, small], i) => (
+            <li class:list={["pt-6 pr-4 max-[560px]:border-b max-[560px]:border-border max-[560px]:py-4", i > 0 && "border-l border-border pl-6 max-[560px]:border-l-0 max-[560px]:pl-0"]}>
+              <strong class="block font-display text-[2rem] leading-[1.1] font-light text-gold-2 italic">{big}</strong>
+              <span class="text-[0.9rem] text-muted-foreground">{small}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <DishBand client:visible items={band} />
+
+  <SignatureGallery client:load dishes={dishes} menuHref="#menu" />
+
+  <!-- THE MENU -->
+  <section id="menu" aria-labelledby="menuTitle" class="surface-paper relative py-[clamp(110px,12vw,170px)]">
+    <div class="container-site">
+      <header class="mb-11 text-center">
+        <p class="eyebrow mb-5" data-reveal>The menu</p>
+        <h2 id="menuTitle" class="display-2 mb-3" data-words>Dinner <em>menu</em></h2>
+        <p class="m-0 text-ink-soft" data-reveal>
+          Tuesday to Saturday · 4:30 to 8 ·{" "}<a class="text-ink underline-offset-[3px]" href={info.orderOnline} target="_blank" rel="noopener">Order pickup online ↗</a>
+        </p>
+      </header>
+      <MenuBoard client:visible sections={D.menu} photos={photos} />
+      <p class="mx-auto mt-11 mb-0 max-w-[1080px] text-center font-display text-[0.98rem] text-ink-soft italic">{D.menuNote}</p>
+    </div>
+  </section>
+
+  <!-- GUESTS SAY -->
+  <section aria-labelledby="reviewsTitle" class="relative overflow-hidden bg-night py-[clamp(120px,14vw,200px)] text-center">
+    <div class="absolute inset-x-0 -inset-y-[12%] opacity-[0.22]" data-parallax>
+      <img src={room.src} srcset={room.srcset} sizes="100vw" alt="" loading="lazy" decoding="async" class="size-full object-cover blur-[2px] saturate-[.8]" />
+    </div>
+    <div class="absolute inset-0 bg-[radial-gradient(70%_70%_at_50%_50%,rgb(15_12_10/.55),rgb(15_12_10/.95))]"></div>
+    <div class="container-site relative z-[2]">
+      <p id="reviewsTitle" class="eyebrow mb-6">Guests say</p>
+      <Reviews client:visible reviews={D.reviews} />
+    </div>
+  </section>
+
+  <!-- CATERING -->
+  <section id="catering" aria-labelledby="catTitle" class="surface-char pt-[clamp(110px,13vw,180px)]">
+    <div class="container-site mb-[clamp(5rem,9vw,8rem)] grid grid-cols-[minmax(0,6fr)_minmax(0,5fr)] items-center gap-[clamp(3rem,8vw,8rem)] max-[900px]:grid-cols-1">
+      <figure class="reveal-img m-0 aspect-[5/6] rounded-[4px] max-[900px]:aspect-[4/3.6]" data-parallax="0.08">
+        <img src={catering.src} srcset={catering.srcset} sizes="(max-width: 900px) 100vw, 50vw" width={catering.width} height={catering.height} alt="Hot catering dishes in chafing trays" loading="lazy" decoding="async" class="size-full object-cover" />
+      </figure>
+      <div>
+        <p class="eyebrow mb-6" data-reveal>Catering</p>
+        <h2 id="catTitle" class="display-2 mb-6 max-w-[12ch]" data-words>Bring Perfetto <em>to your event.</em></h2>
+        <p class="lede" data-reveal>Lasagna, pasta and chicken marsala travel beautifully. We cook everything fresh and have it hot and ready when you are, for 10 guests or 200.</p>
+        <ul class="my-7 grid list-none grid-cols-2 gap-x-7 gap-y-2 p-0 text-[0.98rem] text-muted-foreground max-[560px]:grid-cols-1" data-reveal>
+          {occasions.map((o) => <li class="flex items-center gap-3 before:h-px before:w-3.5 before:flex-none before:bg-gold before:content-['']">{o}</li>)}
+        </ul>
+        <div data-reveal>
+          <Magnet client:visible {...magnet}>
+            <a href={asset("order.html")} class={buttonVariants({ variant: "gold" })}>Start a catering order <span aria-hidden="true">→</span></a>
+          </Magnet>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-site">
+      <ol class="mb-[clamp(4.5rem,8vw,7rem)] grid list-none grid-cols-3 border-t border-border p-0 max-[900px]:grid-cols-1">
+        {steps.map((s, i) => (
+          <li data-reveal class:list={["pt-9 pr-9 max-[900px]:py-6 max-[900px]:pr-0", i > 0 && "border-l border-border pl-9 max-[900px]:border-t max-[900px]:border-l-0 max-[900px]:pl-0"]}>
+            <span class="mb-4 block font-display text-[2.6rem] leading-none font-light text-gold-2 italic">{String(i + 1).padStart(2, "0")}</span>
+            <h3 class="mb-1.5 text-[1.55rem]">{s.title}</h3>
+            <p class="m-0 text-[0.97rem] text-muted-foreground">{s.text}</p>
+          </li>
+        ))}
+      </ol>
+
+      <h3 class="display-3 mb-8 flex flex-wrap items-baseline gap-x-6 gap-y-1.5" data-reveal>
+        Per-person packages
+        <small class="font-sans text-[0.8rem] tracking-[0.14em] text-faint uppercase">Choose your dishes when you order</small>
+      </h3>
+      <div class="mb-6 grid grid-cols-[repeat(auto-fit,minmax(255px,1fr))] items-stretch gap-[1.4rem]">
+        {D.packages.map((p) => (
+          <div data-reveal class="h-full">
+            <Card
+              className={[
+                "relative h-full gap-0 rounded-md px-[1.7rem] pt-8 pb-[1.7rem] shadow-none transition-[translate,border-color] duration-700 ease-out-expo hover:-translate-y-1.5 hover:border-gold/55",
+                p.featured
+                  ? "border-gold/70 bg-[linear-gradient(180deg,rgb(211_174_107/.12),rgb(211_174_107/.03))]"
+                  : "border-border bg-[linear-gradient(180deg,rgb(243_234_220/.045),rgb(243_234_220/.015))]",
+              ].join(" ")}
+            >
+              {p.featured && (
+                <Badge className="absolute -top-3 left-[1.7rem] bg-gold px-3 py-1 text-[0.7rem] font-semibold tracking-[0.14em] text-[#1A120B] uppercase">Most popular</Badge>
+              )}
+              <p class="kicker mb-2.5 text-gold">{p.tag}</p>
+              <h4 class="mb-2 text-[2rem]">{p.name}</h4>
+              <p class="mb-6 flex flex-col gap-1 font-display text-[3rem] leading-none font-light text-gold-2">
+                {money(p.perPerson)}
+                <small class="font-sans text-[0.82rem] tracking-[0.04em] text-faint">per person · min {p.min}</small>
+              </p>
+              <ul class="m-0 mb-6 flex-1 list-none border-t border-border p-0 text-[0.93rem] leading-[1.45]">
+                {p.boxed && (
+                  <li class="border-b border-border py-2.5"><strong class="block font-medium">Mix and match boxes</strong><span class="mt-0.5 block text-[0.84rem] text-faint">{(p.boxOptions ?? []).join(" · ")}</span></li>
+                )}
+                {(p.choices || []).map((c) => (
+                  <li class="border-b border-border py-2.5"><strong class="block font-medium">{choiceTitle(c)}</strong><span class="mt-0.5 block text-[0.84rem] text-faint">{c.options.join(" · ")}</span></li>
+                ))}
+                {p.included.map((x) => <li class="border-b border-border py-2.5">{x}</li>)}
+                {(p.upgrades || []).map((u) => (
+                  <li class="border-b border-border py-2.5 text-gold-2"><strong class="font-medium">Optional: {(u.title ?? "").replace(/^Add /, "add ")}</strong> +{money(u.perPerson ?? 0)} per person</li>
+                ))}
+              </ul>
+              <a href={asset(`order.html?package=${p.id}`)} class={buttonVariants({ variant: p.featured ? "gold" : "light", className: "w-full" })}>Order {p.name}</a>
+            </Card>
+          </div>
+        ))}
+      </div>
+
+      <TraysAccordion client:visible trays={D.trays} extras={D.extras} drinks={D.drinks} />
+
+      <div class="mb-12 rounded-md border border-border p-[clamp(1.8rem,3vw,2.6rem)]" data-reveal>
+        <h3 class="display-3 mb-6">{D.payment.title}</h3>
+        <ol class="m-0 mb-6 grid list-none grid-cols-3 gap-8 p-0 max-[900px]:grid-cols-1">
+          {D.payment.steps.map((s, i) => (
+            <li class="flex items-start gap-4">
+              <span class="grid size-[34px] flex-none place-items-center rounded-full border border-gold text-[0.88rem] text-gold">{i + 1}</span>
+              <div>
+                <h4 class="mt-0.5 mb-1.5 text-[1.3rem]">{s.title}</h4>
+                <p class="m-0 text-[0.93rem] text-muted-foreground">{s.text}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+        <p class="m-0 border-t border-border pt-5 text-[0.9rem] text-faint">{D.payment.note}</p>
+      </div>
+
+      <div class="grid grid-cols-4 gap-7 pb-[clamp(5rem,9vw,8rem)] max-[1060px]:grid-cols-2 max-[560px]:grid-cols-1" data-reveal>
+        {D.cateringTerms.map((t) => (
+          <div>
+            <h4 class="kicker mb-2 text-gold">{t.title}</h4>
+            <p class="m-0 text-[0.93rem] text-muted-foreground">{t.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Order call to action -->
+    <div class="relative overflow-hidden py-[clamp(100px,12vw,160px)]">
+      <div class="absolute inset-x-0 -inset-y-[14%]" data-parallax>
+        <img src={trays.src} srcset={trays.srcset} sizes="100vw" alt="" loading="lazy" decoding="async" class="size-full object-cover" />
+      </div>
+      <div class="absolute inset-0 bg-[linear-gradient(90deg,rgb(15_12_10/.92)_0%,rgb(15_12_10/.6)_60%,rgb(15_12_10/.4)_100%)]"></div>
+      <div class="container-site relative z-[2] flex flex-wrap items-end justify-between gap-x-16 gap-y-8">
+        <div>
+          <h3 class="mb-2 text-[clamp(2.6rem,5vw,4.4rem)]" data-words>Ready to <em>order?</em></h3>
+          <p class="m-0 max-w-[32rem] text-cream/80" data-reveal>Pick your package and dishes, watch your estimate add up, and send it over. About two minutes, and nothing to pay now.</p>
+        </div>
+        <div data-reveal>
+          <Magnet client:visible {...magnet}>
+            <a href={asset("order.html")} class={buttonVariants({ variant: "gold", size: "lg" })}>Start your catering order <span aria-hidden="true">→</span></a>
+          </Magnet>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRIVATE EVENTS -->
+  <section id="events" aria-labelledby="eventsTitle" class="relative flex min-h-[92vh] items-end overflow-hidden py-[clamp(100px,12vw,160px)]">
+    <div class="absolute inset-x-0 -inset-y-[14%]" data-parallax>
+      <img src={events.src} srcset={events.srcset} sizes="100vw" alt="A long table set with candles for a private dinner" loading="lazy" decoding="async" class="size-full object-cover" />
+    </div>
+    <div class="absolute inset-0 bg-[linear-gradient(0deg,rgb(10_8_6/.92)_0%,rgb(10_8_6/.35)_55%,rgb(10_8_6/.55)_100%)]"></div>
+    <div class="container-site relative z-[2]">
+      <p class="eyebrow mb-6" data-reveal>Private events</p>
+      <h2 id="eventsTitle" class="mb-5 text-[clamp(3rem,6.6vw,6.4rem)]" data-words>Celebrate <em>with us.</em></h2>
+      <p class="lede mb-8 text-cream/85" data-reveal>Rehearsal dinners, birthdays, showers, business dinners and holiday parties. Reserve a section, or ask about having the restaurant to yourselves on Sundays and Mondays.</p>
+      <div data-reveal>
+        <Magnet client:visible {...magnet}>
+          <a href={asset("events.html")} class={buttonVariants({ variant: "gold" })}>Plan a private event <span aria-hidden="true">→</span></a>
+        </Magnet>
+      </div>
+    </div>
+  </section>
+
+  <!-- VISIT -->
+  <section id="visit" aria-labelledby="visitTitle" class="surface-paper pt-[clamp(110px,12vw,170px)] pb-[clamp(90px,10vw,140px)]">
+    <div class="container-site grid grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] items-center gap-[clamp(3rem,7vw,7rem)] max-[900px]:grid-cols-1">
+      <div>
+        <p class="eyebrow mb-6" data-reveal>Visit</p>
+        <h2 id="visitTitle" class="display-2 mb-6 max-w-[12ch]" data-words>Find us in <em>Downtown Tehachapi</em></h2>
+        <address class="mb-8 text-[1.12rem] leading-[1.7] not-italic" data-reveal>
+          {info.name}<br />
+          {info.address}, {info.city}<br />
+          <a class="border-b border-current no-underline" href={info.phoneHref}>{info.phone}</a>
+        </address>
+        <div class="mb-5 rounded-md bg-white px-7 py-6 shadow-[0_20px_40px_-30px_rgb(28_22_18/.45)]" data-reveal>
+          <OpenStatus client:idle schedule={info.schedule} className="font-medium text-ink" />
+          <dl class="mt-5 mb-0 grid grid-cols-[auto_1fr] gap-x-8 gap-y-2 border-t border-border pt-4 text-[0.97rem]">
+            {info.hours.map((h) => (
+              <>
+                <dt class="text-ink-soft">{h.days}</dt>
+                <dd class="m-0 text-right tabular-nums">{h.time}</dd>
+              </>
+            ))}
+          </dl>
+        </div>
+        <p class="text-[0.92rem] text-ink-soft" data-reveal>It gets busy, so reservations are recommended. {info.orderHours}.</p>
+        <div class="mt-7 flex flex-wrap items-center gap-x-6 gap-y-4" data-reveal>
+          <Magnet client:visible {...magnet}>
+            <a class={buttonVariants({ variant: "dark" })} href={info.phoneHref}>Call to reserve</a>
+          </Magnet>
+          <Magnet client:visible {...magnet}>
+            <a class={buttonVariants({ variant: "outline" })} href={info.orderOnline} target="_blank" rel="noopener">Order pickup online</a>
+          </Magnet>
+          <a class="link-wipe font-medium text-ink" target="_blank" rel="noopener" href={directions}>Directions <span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+      <div class="reveal-img aspect-[4/4.2] overflow-hidden rounded-md bg-paper-2">
+        <iframe title="Map to Perfetto Italian Restaurant" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src={mapSrc} class="block size-full border-0 grayscale-[.4] sepia-[.12] contrast-[1.02]"></iframe>
+      </div>
+    </div>
+  </section>
+</Layout>

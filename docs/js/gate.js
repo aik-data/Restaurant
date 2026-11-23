@@ -6,8 +6,8 @@
  *
  * To change the password: replace PASSWORD_SHA256 with the SHA-256
  * hash of the new password (lowercase hex).
- * To launch the site: delete the gate.js <script> line from
- * index.html and order.html, and the robots "noindex" meta tag.
+ * To launch the site: in site/src/layouts/Layout.astro delete the
+ * gate.js <script> line and the robots "noindex" meta tag, then rebuild.
  */
 (function () {
   "use strict";
@@ -27,11 +27,11 @@
   style.textContent =
     "html.gate-locked body > *:not(#gate){display:none !important}" +
     "#gate{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:16px;" +
-    "background:radial-gradient(80% 60% at 50% 40%,#2A1F18 0%,#0F0C0A 70%);font-family:'Hanken Grotesk',system-ui,sans-serif;color:#F3EADC}" +
+    "background:radial-gradient(80% 60% at 50% 40%,#2A1F18 0%,#0F0C0A 70%);font-family:'Hanken Grotesk Variable','Hanken Grotesk',system-ui,sans-serif;color:#F3EADC}" +
     "#gate form{width:min(400px,100%);text-align:center;padding:40px 32px 30px;border:1px solid rgba(243,234,220,.14);border-radius:12px;background:rgba(22,17,14,.85)}" +
-    "#gate .g-brand{font-family:'Newsreader',Georgia,serif;font-style:italic;font-weight:300;font-size:3.6rem;line-height:1;color:#F3EADC}" +
+    "#gate .g-brand{font-family:'Newsreader Variable','Newsreader',Georgia,serif;font-style:italic;font-weight:300;font-size:3.6rem;line-height:1;color:#F3EADC}" +
     "#gate .g-sub{font-size:.72rem;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:#D3AE6B;margin:12px 0 26px}" +
-    "#gate h1{font-family:'Newsreader',Georgia,serif;font-weight:300;font-size:1.8rem;line-height:1.15;margin:0 0 8px}" +
+    "#gate h1{font-family:'Newsreader Variable','Newsreader',Georgia,serif;font-weight:300;font-size:1.8rem;line-height:1.15;margin:0 0 8px}" +
     "#gate p{font-size:.95rem;color:rgba(243,234,220,.68);margin:0 0 20px}" +
     "#gate input{width:100%;font:inherit;font-size:1rem;padding:.9em 1em;border:1px solid rgba(243,234,220,.25);border-radius:999px;background:rgba(243,234,220,.06);color:#F3EADC;margin-bottom:12px;text-align:center}" +
     "#gate input:focus{outline:none;border-color:#D3AE6B;box-shadow:0 0 0 4px rgba(211,174,107,.25)}" +

@@ -1,0 +1,43 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import PageHero from "@/components/site/PageHero.astro";
+import EventForm from "@/components/site/EventForm";
+import { D } from "@/lib/data";
+import { pic } from "@/lib/images";
+import { asset } from "@/lib/utils";
+
+const photo = await pic(D.media.events.src, [960, 1600, 2400]);
+const endpoint = import.meta.env.PUBLIC_CATERING_ENDPOINT || D.info.cateringEndpoint;
+const perks = [
+  { title: "Our dining room, your party", text: "Reserve a section, or ask about having the restaurant to yourselves on Sundays and Mondays." },
+  { title: "Menus your way", text: "Family-style platters, a buffet, or a set menu built from our dinner favorites." },
+  { title: "Simple to book", text: "We reply within one business day. A deposit holds your date, and the balance is invoiced before the event." },
+];
+---
+<Layout
+  page="events"
+  title="Private Events | Perfetto Italian Restaurant, Downtown Tehachapi"
+  description="Plan a private event at Perfetto Italian Restaurant in Downtown Tehachapi: rehearsal dinners, birthdays, showers, business dinners and holiday parties."
+>
+  <PageHero
+    photo={photo}
+    back={{ href: asset(""), label: "Back to home" }}
+    lede="Rehearsal dinners, birthdays, showers, business dinners and holiday parties. Tell us about your event and we'll put together a menu and a plan that fits."
+  >
+    <Fragment slot="title">Private events <em>at Perfetto</em></Fragment>
+    <ul class="m-0 mt-2 grid list-none grid-cols-3 gap-6 border-t border-border p-0 pt-6 max-[900px]:grid-cols-1">
+      {perks.map((p) => (
+        <li>
+          <strong class="mb-1.5 block font-display text-[1.45rem] font-light text-cream">{p.title}</strong>
+          <span class="text-[0.93rem] text-cream/78">{p.text}</span>
+        </li>
+      ))}
+    </ul>
+  </PageHero>
+
+  <section aria-label="Private event inquiry form" class="surface-paper">
+    <div class="container-site pt-[clamp(50px,6vw,90px)] pb-[clamp(90px,10vw,140px)]">
+      <EventForm client:load endpoint={endpoint} />
+    </div>
+  </section>
+</Layout>

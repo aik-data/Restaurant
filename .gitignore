@@ -1,0 +1,5 @@
+# dependencies and build caches
+node_modules/
+site/.astro/
+.wrangler/
+.DS_Store

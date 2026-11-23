@@ -13,7 +13,9 @@
  *   2. Cloudflare dashboard → Workers & Pages → Create application → Import a
  *      repository → this repo, root directory "worker", name "perfetto-catering".
  *   3. Add the three secrets below, then put the Worker's URL in
- *      cateringEndpoint in docs/js/menu-data.js.
+ *      cateringEndpoint in site/src/lib/menu-data.js, then rebuild the site.
+ *
+ * Menu, prices and the estimate logic come from site/src/lib (shared with the website).
  *
  * Settings (Cloudflare dashboard → the Worker → Settings → Variables and Secrets):
  *   RESEND_API_KEY       secret   Resend API key
@@ -23,8 +25,8 @@
  *   ALLOWED_ORIGINS      variable websites allowed to send orders (set in wrangler.toml)
  */
 
-import DATA from "../../docs/js/menu-data.js";
-import EST from "../../docs/js/estimate.js";
+import { PERFETTO as DATA } from "../../site/src/lib/menu-data.js";
+import * as EST from "../../site/src/lib/estimate.js";
 
 const RESEND_URL = "https://api.resend.com/emails";
 const TIME_ZONE = "America/Los_Angeles";

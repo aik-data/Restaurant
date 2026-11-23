@@ -1,0 +1,37 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import PageHero from "@/components/site/PageHero.astro";
+import OrderBuilder from "@/components/site/OrderBuilder";
+import { D } from "@/lib/data";
+import { pic } from "@/lib/images";
+import { asset } from "@/lib/utils";
+
+const photo = await pic(D.media.catering.src, [960, 1600]);
+// A test build can point the forms somewhere else: PUBLIC_CATERING_ENDPOINT=... npm run build
+const endpoint = import.meta.env.PUBLIC_CATERING_ENDPOINT || D.info.cateringEndpoint;
+const steps = ["Event details", "Package & dishes", "Trays & extras", "Pickup or delivery", "Your info"];
+---
+<Layout
+  page="order"
+  title="Order Catering | Perfetto Italian Restaurant, Tehachapi"
+  description="Build your catering order from Perfetto Italian Restaurant in Tehachapi. Choose a package and dishes, see a live estimate and send your request."
+>
+  <PageHero
+    photo={photo}
+    back={{ href: asset("") + "#catering", label: "Catering packages & info" }}
+    lede="Choose a package and your dishes, add trays if you like, and see your estimate as you go. No payment now: we'll confirm the details with you, then email a secure invoice."
+  >
+    <Fragment slot="title">Build your <em>catering order</em></Fragment>
+    <ol class="m-0 flex list-none flex-wrap gap-x-6 gap-y-2 p-0" aria-label="Steps">
+      {steps.map((s, i) => (
+        <li class="text-[0.86rem] text-cream/80"><span class="mr-2 text-gold tabular-nums">{String(i + 1).padStart(2, "0")}</span>{s}</li>
+      ))}
+    </ol>
+  </PageHero>
+
+  <section aria-label="Catering order form" class="surface-paper">
+    <div class="container-site pt-[clamp(50px,6vw,90px)] pb-[clamp(90px,10vw,140px)]">
+      <OrderBuilder client:load endpoint={endpoint} />
+    </div>
+  </section>
+</Layout>

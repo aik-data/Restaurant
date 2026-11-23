@@ -1,0 +1,123 @@
+---
+import "@/styles/global.css";
+import Header from "@/components/site/Header";
+import Footer from "@/components/site/Footer.astro";
+import { D } from "@/lib/data";
+import { asset } from "@/lib/utils";
+import { pic, type Pic } from "@/lib/images";
+import serifFont from "@fontsource-variable/newsreader/files/newsreader-latin-opsz-normal.woff2?url";
+import serifItalic from "@fontsource-variable/newsreader/files/newsreader-latin-opsz-italic.woff2?url";
+import sansFont from "@fontsource-variable/hanken-grotesk/files/hanken-grotesk-latin-wght-normal.woff2?url";
+
+interface Props {
+  title: string;
+  description: string;
+  page: "home" | "order" | "events" | "notfound";
+  /** The largest photo above the fold, preloaded so it shows sooner */
+  lcp?: Pic;
+}
+const { title, description, page, lcp } = Astro.props;
+const home = page === "home";
+const share = await pic("img/hero-pasta.jpg", [1200], 78, "jpg");
+const shareUrl = new URL(share.src, Astro.site).href;
+const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
+
+// Local SEO: tells Google this is a restaurant that caters
+const ld = {
+  "@context": "https://schema.org",
+  "@type": "Restaurant",
+  name: D.info.name,
+  servesCuisine: "Italian",
+  priceRange: "$$",
+  telephone: "+1-661-822-1711",
+  image: shareUrl,
+  address: { "@type": "PostalAddress", streetAddress: D.info.address, addressLocality: "Tehachapi", addressRegion: "CA", postalCode: "93561", addressCountry: "US" },
+  openingHoursSpecification: [{ "@type": "OpeningHoursSpecification", dayOfWeek: ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"], opens: "16:30", closes: "20:00" }],
+  hasMenu: new URL(asset("") + "#menu", Astro.site).href,
+  acceptsReservations: "True",
+  makesOffer: { "@type": "Offer", itemOffered: { "@type": "Service", name: "Catering" } },
+};
+---
+<!doctype html>
+<html lang="en" data-page={page}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Preview mode: remove the next two lines when the site is ready for customers -->
+    <meta name="robots" content="noindex, nofollow" />
+    <script is:inline src={asset("js/gate.js")}></script>
+    <script is:inline>document.documentElement.classList.add("js");</script>
+    {home && (
+      <script is:inline>
+        try { if (!sessionStorage.getItem("pf-intro") && !matchMedia("(prefers-reduced-motion: reduce)").matches) document.documentElement.classList.add("intro"); } catch (e) {}
+      </script>
+    )}
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0F0C0A" />
+    <link rel="icon" href={asset("favicon.svg")} type="image/svg+xml" />
+    <link rel="canonical" href={pageUrl} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:image" content={shareUrl} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preload" as="font" type="font/woff2" href={serifFont} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={serifItalic} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={sansFont} crossorigin />
+    {lcp && <link rel="preload" as="image" imagesrcset={lcp.srcset} imagesizes="100vw" fetchpriority="high" />}
+    {home && <script type="application/ld+json" set:html={JSON.stringify(ld)} />}
+  </head>
+  <body class:list={[home ? "bg-night" : "bg-paper"]}>
+    <a href="#main" class="sr-only z-[100] rounded-full bg-gold px-5 py-3 font-medium text-[#1A120B] focus:not-sr-only focus:fixed focus:top-3 focus:left-3">Skip to content</a>
+
+    {home && (
+      <div class="loader" id="loader" aria-hidden="true">
+        <span class="loader-mark">Perfetto</span>
+        <span class="loader-sub">Downtown Tehachapi</span>
+      </div>
+    )}
+
+    <Header client:load page={page} schedule={D.info.schedule} phone={D.info.phone} phoneHref={D.info.phoneHref} />
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <Footer page={page} />
+
+    <div
+      id="proto-banner"
+      role="note"
+      class="fixed right-[18px] bottom-[18px] z-30 flex items-center gap-3 rounded-full border border-border bg-black/80 py-2 pr-2.5 pl-4 text-[0.76rem] tracking-[0.03em] text-muted-foreground backdrop-blur-md transition-[bottom] duration-[600ms] ease-out-expo max-[560px]:right-3 max-[560px]:bottom-3 max-[560px]:left-3 max-[560px]:justify-between max-[560px]:text-[0.68rem]"
+    >
+      <span><strong class="font-semibold text-gold">Prototype</strong> · <span class="max-[560px]:hidden">stock photos and some prices are placeholders</span><span class="min-[561px]:hidden">placeholder photos &amp; prices</span></span>
+      <button type="button" aria-label="Dismiss prototype notice" class="grid size-7 cursor-pointer place-items-center text-[1.2rem] leading-none text-cream/80 hover:text-cream">&times;</button>
+    </div>
+
+    {home && (
+      <a
+        id="mobile-cta"
+        href={asset("order.html")}
+        class="fixed inset-x-4 bottom-4 z-30 hidden translate-y-[160%] items-center justify-center gap-2 rounded-full bg-gold p-[1.05em] font-semibold text-[#1A120B] no-underline shadow-[0_16px_34px_-12px_rgb(0_0_0/0.6)] transition-[translate] duration-[600ms] ease-out-expo max-[900px]:flex"
+      >
+        Order catering <span aria-hidden="true">→</span>
+      </a>
+    )}
+
+    <script>
+      import "@/scripts/site";
+    </script>
+    <style is:global>
+      /* Phones: the order button slides up once you're past the hero; on the
+         home page the prototype notice sits above it (and above the hero bar) */
+      html.past-hero #mobile-cta { translate: 0 0; }
+      @media (max-width: 560px) {
+        html[data-page="home"] #proto-banner { bottom: 68px; }
+        html.past-hero[data-page="home"] #proto-banner { bottom: 84px; }
+      }
+      #proto-banner.is-dismissed { display: none; }
+    </style>
+  </body>
+</html>

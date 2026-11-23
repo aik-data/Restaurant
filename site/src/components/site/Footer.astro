@@ -1,0 +1,46 @@
+---
+import { D } from "@/lib/data";
+import { skylineSvg } from "@/lib/skyline";
+import { asset } from "@/lib/utils";
+
+interface Props { page: "home" | "order" | "events" | "notfound" }
+const { page } = Astro.props;
+const home = page === "home";
+const onHome = (hash: string) => (home ? hash : asset("") + hash);
+const explore = [
+  ...(home ? [] : [{ label: "Home", href: asset("") }]),
+  { label: "Menu", href: onHome("#menu") },
+  ...(home ? [{ label: "Catering", href: "#catering" }] : []),
+  { label: "Order catering", href: asset("order.html") },
+  { label: "Private events", href: asset("events.html") },
+];
+const h4 = "mb-3 font-sans text-[0.74rem] font-semibold tracking-[0.22em] text-gold uppercase";
+---
+<footer class="bg-night text-muted-foreground">
+  <div class="bg-paper leading-[0]" set:html={skylineSvg()} />
+  <div class="bg-[#120E0B] pt-4 pb-8 max-[900px]:pb-28">
+    <div class="container-site grid grid-cols-[1.6fr_1fr_1fr_1fr] gap-8 pt-8 pb-10 text-[0.95rem] max-[900px]:grid-cols-2">
+      <div class="max-[900px]:col-span-2">
+        <span class="mb-3 block font-display text-[3.4rem] leading-none font-light text-cream italic">Perfetto</span>
+        <p class="max-w-[24rem]">Homemade Italian in Downtown Tehachapi. Family owned and run.</p>
+      </div>
+      <div>
+        <h4 class={h4}>Visit</h4>
+        <p>{D.info.address}<br />{D.info.city}<br /><a class="text-cream no-underline hover:text-gold-2" href={D.info.phoneHref}>{D.info.phone}</a></p>
+      </div>
+      <div>
+        <h4 class={h4}>Dinner</h4>
+        <p>Tuesday – Saturday<br />4:30 – 8:00 PM<br />Closed Sunday &amp; Monday</p>
+      </div>
+      <div>
+        <h4 class={h4}>Explore</h4>
+        <ul class="m-0 list-none p-0">
+          {explore.map((l) => <li><a class="text-cream no-underline transition-colors hover:text-gold-2" href={l.href}>{l.label}</a></li>)}
+        </ul>
+      </div>
+    </div>
+    <p class="container-site mb-0 border-t border-border pt-5 text-[0.8rem] text-faint">
+      © <span data-year>{new Date().getFullYear()}</span> Perfetto Italian Restaurant · Downtown Tehachapi, California
+    </p>
+  </div>
+</footer>
