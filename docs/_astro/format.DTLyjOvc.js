@@ -1,1 +1,0 @@
-function e(e){return`$`+(Math.round(e*100)%100==0?Math.round(e).toLocaleString(`en-US`):e.toLocaleString(`en-US`,{minimumFractionDigits:2,maximumFractionDigits:2}))}function t(e){return`Choose `+e.pick+` `+(e.pick>1?e.plural:e.label)}export{e as n,t};
