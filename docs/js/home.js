@@ -78,10 +78,14 @@
       '<div class="pkg-price">' + money(p.perPerson) + " <span>per person</span></div>" +
       '<p class="pkg-min">Minimum ' + p.min + " guests</p>" +
       "<ul>" +
-        p.choices.map(function (c) {
+        (p.boxed ? "<li><strong>Mix and match boxes</strong><span class=\"pkg-opts\">" + p.boxOptions.map(esc).join(" · ") + "</span></li>" : "") +
+        (p.choices || []).map(function (c) {
           return "<li><strong>" + esc(choiceTitle(c)) + '</strong><span class="pkg-opts">' + c.options.map(esc).join(" · ") + "</span></li>";
         }).join("") +
         p.included.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") +
+        (p.upgrades || []).map(function (u) {
+          return '<li class="pkg-upgrade"><strong>Optional: ' + esc(u.title.replace(/^Add /, "add ")) + "</strong> +" + money(u.perPerson) + " per person</li>";
+        }).join("") +
       "</ul>" +
       '<a href="order.html?package=' + p.id + '" class="btn' + (p.featured ? "" : " btn-ghost-dark") + '">Order ' + esc(p.name) + "</a>" +
       "</article>";
@@ -97,6 +101,11 @@
     D.extras.map(function (x) {
       return "<tr><td>" + esc(x.name) + "</td><td>" + money(x.price) + (x.unit === "dozen" ? "/dz" : "") + "</td></tr>";
     }).join("") + "</tbody></table></div>");
+  trayCards.push('<div class="tray-card"><h4>Drinks</h4><table class="tray-table"><thead><tr><th scope="col">Item</th><th scope="col">Price</th></tr></thead><tbody>' +
+    (D.drinks || []).map(function (x) {
+      var unit = { gallon: "/gal", "2-liter": " each" }[x.unit] || "";
+      return "<tr><td>" + esc(x.name) + "</td><td>" + money(x.price) + unit + "</td></tr>";
+    }).join("") + '</tbody></table><p class="tray-note">A gallon serves about 10.</p></div>');
   $("#trays").innerHTML = trayCards.join("");
 
   var pay = D.payment;

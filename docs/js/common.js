@@ -5,7 +5,10 @@
   var D = window.PERFETTO;
   var $ = function (sel, root) { return (root || document).querySelector(sel); };
   var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
-  var money = function (n) { return "$" + Math.round(n).toLocaleString("en-US"); };
+  var money = function (n) {
+    var cents = Math.round(n * 100) % 100 !== 0;
+    return "$" + (cents ? n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : Math.round(n).toLocaleString("en-US"));
+  };
   var esc = function (s) {
     return String(s).replace(/[&<>"']/g, function (c) {
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];

@@ -33,27 +33,69 @@
     return D.packages.filter(function (p) { return p.id === id; })[0] || null;
   }
 
+  function pickGroupHtml(c) {
+    var type = c.pick > 1 ? "checkbox" : "radio";
+    return '<div class="pick-group" data-group="' + c.id + '" data-pick-max="' + c.pick + '">' +
+      '<div class="pick-head"><span class="pick-title">' + esc(choiceTitle(c)) + '</span><span class="pick-count" aria-live="polite"></span></div>' +
+      '<div class="chips" role="group" aria-label="' + esc(choiceTitle(c)) + '">' +
+      c.options.map(function (o) {
+        return '<label class="chip"><input type="' + type + '" name="pick-' + c.id + '" value="' + esc(o) + '"><span>' + esc(o) + "</span></label>";
+      }).join("") + "</div></div>";
+  }
+
   function renderBuilder(pkg) {
     builderFor = pkg ? pkg.id : null;
     if (!pkg) { builderEl.innerHTML = ""; builderEl.hidden = true; return; }
     builderEl.hidden = false;
-    builderEl.innerHTML = '<p class="builder-title">Build your ' + esc(pkg.name) + "</p>" +
-      pkg.choices.map(function (c) {
-        var type = c.pick > 1 ? "checkbox" : "radio";
-        return '<div class="pick-group" data-group="' + c.id + '" data-pick-max="' + c.pick + '">' +
-          '<div class="pick-head"><span class="pick-title">' + esc(choiceTitle(c)) + '</span><span class="pick-count" aria-live="polite"></span></div>' +
-          '<div class="chips" role="group" aria-label="' + esc(choiceTitle(c)) + '">' +
-          c.options.map(function (o) {
-            return '<label class="chip"><input type="' + type + '" name="pick-' + c.id + '" value="' + esc(o) + '"><span>' + esc(o) + "</span></label>";
-          }).join("") + "</div></div>";
-      }).join("") +
-      '<p class="builder-included"><strong>Also included:</strong> ' + pkg.included.map(esc).join(", ") + "</p>";
+    var html = '<p class="builder-title">Build your ' + esc(pkg.name) + "</p>";
+
+    if (pkg.boxed) {
+      // How many of each box: must add up to the headcount
+      html += '<div class="pick-group box-group" data-group="boxes">' +
+        '<div class="pick-head"><span class="pick-title">How many of each box?</span><span class="pick-count" aria-live="polite"></span></div>' +
+        '<p class="box-hint">Add up to one box per guest. Each box comes labeled.</p>' +
+        pkg.boxOptions.map(function (o) {
+          return '<div class="box-row"><span>' + esc(o) + '</span><label class="tp-qty">Boxes<input type="number" min="0" max="' + EST.MAX_GUESTS +
+            '" value="0" inputmode="numeric" data-box="' + esc(o) + '" aria-label="' + esc(o) + ' boxes"></label></div>';
+        }).join("") + "</div>";
+    }
+
+    html += (pkg.choices || []).map(pickGroupHtml).join("");
+
+    html += (pkg.upgrades || []).map(function (u) {
+      return '<div class="upgrade" data-upgrade="' + u.id + '">' +
+        '<label class="check upgrade-toggle"><input type="checkbox" name="upgrade-' + u.id + '"> <span><strong>' + esc(u.title) +
+        "</strong> +" + money(u.perPerson) + " per person</span></label>" + pickGroupHtml(u) + "</div>";
+    }).join("");
+
+    html += '<p class="builder-included"><strong>Also included:</strong> ' + pkg.included.map(esc).join(", ") + "</p>";
+    builderEl.innerHTML = html;
     refreshPickGroups();
+  }
+
+  function billedGuests(pkg) {
+    var n = parseInt(form.guests.value, 10);
+    return Math.max(isNaN(n) || n < 0 ? 0 : n, pkg ? pkg.min : 0);
   }
 
   // Keep each group to its limit: once full, the other options are disabled
   function refreshPickGroups() {
-    $$(".pick-group", builderEl).forEach(function (g) {
+    // Add-ons: show the dish picker only when the add-on is switched on
+    $$(".upgrade", builderEl).forEach(function (u) {
+      var on = $("input[name^='upgrade-']", u).checked;
+      $(".pick-group", u).hidden = !on;
+      u.classList.toggle("is-on", on);
+    });
+    // Boxed lunches: count boxes against the headcount
+    var boxGroup = $(".box-group", builderEl);
+    if (boxGroup) {
+      var need = billedGuests(selectedPackage());
+      var have = $$("[data-box]", boxGroup).reduce(function (n, i) { var v = parseInt(i.value, 10); return n + (v > 0 ? v : 0); }, 0);
+      $(".pick-count", boxGroup).textContent = have + " of " + need + " boxes";
+      boxGroup.classList.toggle("is-complete", need > 0 && have === need);
+      if (have === need) boxGroup.classList.remove("incomplete");
+    }
+    $$(".pick-group:not(.box-group)", builderEl).forEach(function (g) {
       var max = parseInt(g.dataset.pickMax, 10);
       var inputs = $$("input", g);
       var chosen = inputs.filter(function (i) { return i.checked; }).length;
@@ -75,10 +117,12 @@
         '<label class="tp-qty">Full<input type="number" min="0" max="' + EST.MAX_QTY + '" value="0" inputmode="numeric" data-tray="' + t.id + '" data-size="full" aria-label="' + esc(t.name) + ' full pans"></label></div>';
     }).join("");
   }).join("");
-  picker += "<h4>Starters, Bread &amp; Desserts</h4>" + D.extras.map(function (x) {
-    return '<div class="tp-row"><span class="tp-name">' + esc(x.name) + "<small>" + money(x.price) + " per " + x.unit + "</small></span>" +
+  function extraRow(x) {
+    return '<div class="tp-row"><span class="tp-name">' + esc(x.name) + "<small>" + money(x.price) + " per " + x.unit + (x.note ? " · " + esc(x.note) : "") + "</small></span>" +
       '<span></span><label class="tp-qty">Qty<input type="number" min="0" max="' + EST.MAX_QTY + '" value="0" inputmode="numeric" data-extra="' + x.id + '" aria-label="' + esc(x.name) + ' quantity"></label></div>';
-  }).join("");
+  }
+  picker += "<h4>Starters, Bread &amp; Desserts</h4>" + D.extras.map(extraRow).join("");
+  picker += "<h4>Drinks</h4>" + (D.drinks || []).map(extraRow).join("");
   $("#trayPicker").innerHTML = picker;
 
   $("#deliveryFeeLabel").textContent = "(" + money(D.services.deliveryFee) + " in the Tehachapi area)";
@@ -100,9 +144,19 @@
   function collectOrder() {
     var pkg = selectedPackage();
     var picks = {};
+    var upgrades = {};
+    var boxes = {};
     if (pkg) {
-      pkg.choices.forEach(function (c) {
+      (pkg.choices || []).concat(pkg.upgrades || []).forEach(function (c) {
         picks[c.id] = $$('input[name="pick-' + c.id + '"]:checked', builderEl).map(function (i) { return i.value; });
+      });
+      (pkg.upgrades || []).forEach(function (u) {
+        var box = form.querySelector('input[name="upgrade-' + u.id + '"]');
+        upgrades[u.id] = !!(box && box.checked);
+      });
+      $$("[data-box]", builderEl).forEach(function (i) {
+        var n = parseInt(i.value, 10);
+        if (n > 0) boxes[i.dataset.box] = n;
       });
     }
     return {
@@ -112,6 +166,8 @@
       guests: form.guests.value,
       packageId: pkg ? pkg.id : "",
       picks: picks,
+      upgrades: upgrades,
+      boxes: boxes,
       trays: $$("[data-tray]", form).map(function (i) { return { id: i.dataset.tray, size: i.dataset.size, qty: i.value }; })
         .filter(function (t) { return parseInt(t.qty, 10) > 0; }),
       extras: $$("[data-extra]", form).map(function (i) { return { id: i.dataset.extra, qty: i.value }; })

@@ -164,7 +164,22 @@
           { id: "pasta", label: "pasta", plural: "pastas", pick: 1, hot: true, options: LUNCH_PASTAS },
           { id: "salad", label: "salad", plural: "salads", pick: 1, options: BASIC_SALADS },
         ],
+        upgrades: [
+          { id: "entree2", title: "Add an entrée", perPerson: 6, label: "entrée", plural: "entrées", pick: 1, hot: true, options: CHICKEN_EGGPLANT },
+        ],
         included: ["Garlic bread", "Plates, napkins & serving utensils"],
+      },
+      {
+        id: "boxed",
+        name: "Boxed Lunches",
+        tag: "One box per person",
+        perPerson: 16,
+        min: 8,
+        boxed: true,
+        // Guests say how many of each box they want
+        boxOptions: ["Chicken Parmesan with Pasta", "Chicken Marsala with Pasta", "Fettuccine Alfredo", "Pasta Bolognese", "Bolognese Lasagna", "Veggie Lasagna", "Eggplant Parmesan with Pasta"],
+        choices: [],
+        included: ["Side Caesar salad and garlic bread in every box", "Labeled with each guest's meal", "Napkin & utensils"],
       },
       {
         id: "dinner",
@@ -177,6 +192,10 @@
           { id: "pasta", label: "pasta or lasagna", plural: "pastas", pick: 1, hot: true, options: PASTAS },
           { id: "entree", label: "entrée", plural: "entrées", pick: 1, hot: true, options: CHICKEN_EGGPLANT },
           { id: "salad", label: "salad", plural: "salads", pick: 1, options: BASIC_SALADS },
+        ],
+        upgrades: [
+          // notSameAs: must be different from the dish picked in that slot
+          { id: "entree2", title: "Add a second entrée", perPerson: 6, label: "second entrée", plural: "second entrées", pick: 1, hot: true, options: CHICKEN_EGGPLANT, notSameAs: "entree" },
         ],
         included: ["Garlic bread", "Plates, napkins & serving utensils"],
       },
@@ -237,6 +256,13 @@
     { id: "x-ravioli", name: "Breaded Cheese Ravioli", unit: "dozen", price: 18 },
     { id: "x-cannoli", name: "Homemade Cannoli", unit: "dozen", price: 36 },
     { id: "x-tiramisu", name: "Tiramisu (half pan, serves 12)", unit: "pan", price: 60 },
+  ],
+
+  // Drinks for catering orders (prices are suggestions to confirm)
+  drinks: [
+    { id: "d-tea", name: "Cinnamon Iced Tea", unit: "gallon", price: 12, note: "Our house specialty. A gallon serves about 10." },
+    { id: "d-lemonade", name: "Lemonade", unit: "gallon", price: 12, note: "A gallon serves about 10." },
+    { id: "d-soda", name: "2-Liter Soda", unit: "2-liter", price: 4.5, note: "Tell us your flavors in the notes." },
   ],
 
   services: {

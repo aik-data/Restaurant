@@ -1,11 +1,19 @@
 /*
  * Perfetto catering email backend (Cloudflare Worker)
  * ------------------------------------------------------------
- * The order page (docs/order.html) POSTs catering requests here. The Worker:
- *   1. checks the request and recomputes the estimate from the site's own
- *      menu data, so prices in the emails can't be tampered with
- *   2. emails the restaurant the full order through Resend (Reply goes to the customer)
- *   3. emails the customer a confirmation with their order and next steps
+ * The order page (docs/order.html) POSTs catering requests here, and the
+ * private events page (docs/events.html) POSTs event inquiries. The Worker:
+ *   1. checks the request (for orders, it recomputes the estimate from the
+ *      site's own menu data, so prices in the emails can't be tampered with)
+ *   2. emails the restaurant through Resend (Reply goes to the customer)
+ *   3. emails the customer a confirmation with what happens next
+ *
+ * One-time setup:
+ *   1. Buy the domain and verify it in Resend (add the DNS records Resend shows).
+ *   2. Cloudflare dashboard → Workers & Pages → Create application → Import a
+ *      repository → this repo, root directory "worker", name "perfetto-catering".
+ *   3. Add the three secrets below, then put the Worker's URL in
+ *      cateringEndpoint in docs/js/menu-data.js.
  *
  * Settings (Cloudflare dashboard → the Worker → Settings → Variables and Secrets):
  *   RESEND_API_KEY       secret   Resend API key
@@ -38,7 +46,9 @@ function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
-const money = (n) => "$" + Math.round(n).toLocaleString("en-US");
+const money = (n) => "$" + (Math.round(n * 100) % 100 !== 0
+  ? n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  : Math.round(n).toLocaleString("en-US"));
 
 function todayInTehachapi() {
   return new Date().toLocaleDateString("en-CA", { timeZone: TIME_ZONE }); // YYYY-MM-DD
@@ -67,6 +77,8 @@ function readOrder(raw) {
   order.guests = o.guests;
   order.packageId = clean(o.packageId, 40);
   order.picks = o.picks && typeof o.picks === "object" ? o.picks : {};
+  order.upgrades = o.upgrades && typeof o.upgrades === "object" ? o.upgrades : {};
+  order.boxes = o.boxes && typeof o.boxes === "object" ? o.boxes : {};
   order.trays = Array.isArray(o.trays) ? o.trays.slice(0, 40) : [];
   order.extras = Array.isArray(o.extras) ? o.extras.slice(0, 40) : [];
   order.fulfillment = o.fulfillment === "delivery" ? "delivery" : "pickup";
@@ -225,20 +237,84 @@ function respond(status, body, origin) {
   return new Response(JSON.stringify(body), { status, headers });
 }
 
-async function handleOrder(request, env, origin) {
-  const rawBody = await request.text();
-  if (rawBody.length > MAX_BODY) return respond(413, { error: "Request too large." }, origin);
+/* ---------- private event inquiries ---------- */
 
-  let parsed;
-  try { parsed = JSON.parse(rawBody); } catch (e) { return respond(400, { error: "Invalid request." }, origin); }
+const EVENT_LIMITS = { eventType: 80, date: 10, altDate: 10, timeOfDay: 40, style: 60, budget: 40, name: 100, phone: 40, email: 200, notes: 2000 };
 
-  const order = readOrder(parsed);
-  if (order.website) return respond(200, { ok: true }, origin); // spam trap filled in: pretend it worked
+function readEvent(raw) {
+  const o = raw && typeof raw === "object" ? raw : {};
+  const ev = {};
+  Object.keys(EVENT_LIMITS).forEach((k) => { ev[k] = clean(o[k], EVENT_LIMITS[k]); });
+  Object.keys(EVENT_LIMITS).filter((k) => k !== "notes").forEach((k) => { ev[k] = oneLine(ev[k]); });
+  const g = parseInt(o.guests, 10);
+  ev.guests = isNaN(g) || g < 0 ? 0 : Math.min(g, EST.MAX_GUESTS);
+  ev.website = clean(o.website, 200);
+  return ev;
+}
 
-  const est = EST.estimate(order, DATA);
-  const problem = findProblem(order, est);
-  if (problem) return respond(400, { error: problem }, origin);
+function findEventProblem(ev) {
+  if (!ev.name) return "Please enter your name.";
+  if (!ev.phone || ev.phone.replace(/\D/g, "").length < 7) return "Please enter a phone number we can reach you at.";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ev.email)) return "Please enter a valid email address.";
+  if (!ev.eventType) return "Please choose the type of event.";
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(ev.date) || isNaN(Date.parse(ev.date))) return "Please choose a preferred date.";
+  if (ev.date < todayInTehachapi()) return "Please choose a date in the future.";
+  if (ev.altDate && (!/^\d{4}-\d{2}-\d{2}$/.test(ev.altDate) || ev.altDate < todayInTehachapi())) ev.altDate = "";
+  if (ev.guests < 1) return "Please enter the number of guests.";
+  return "";
+}
 
+function eventRows(ev) {
+  return [
+    ["Event", ev.eventType],
+    ["Preferred date", formatDate(ev.date)],
+    ...(ev.altDate ? [["Backup date", formatDate(ev.altDate)]] : []),
+    ["Time of day", ev.timeOfDay || "Not sure yet"],
+    ["Guests", String(ev.guests)],
+    ["Food style", ev.style || "Not sure yet"],
+    ...(ev.budget ? [["Budget", ev.budget]] : []),
+  ];
+}
+
+function restaurantEventEmail(ev) {
+  const shortDate = new Date(ev.date + "T12:00:00Z").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" });
+  const subject = `New private event inquiry: ${ev.eventType}, ${shortDate}, ${ev.guests} guests`;
+  const contact = [["Name", ev.name], ["Phone", ev.phone], ["Email", ev.email]];
+  const html = layout("New private event inquiry", `
+    <p style="margin:0 0 16px;background:#fff4cc;border-radius:8px;padding:10px 14px;font-size:14px;">
+      Reply to this email to reach ${escapeHtml(ev.name)} directly.
+    </p>
+    <h2 style="font-size:16px;margin:0 0 6px;">Contact</h2>
+    ${detailsTableHtml(contact)}
+    <h2 style="font-size:16px;margin:0 0 6px;">Event</h2>
+    ${detailsTableHtml(eventRows(ev))}
+    ${ev.notes ? `<h2 style="font-size:16px;margin:4px 0 6px;">Notes</h2><p style="margin:0;white-space:pre-wrap;">${escapeHtml(ev.notes)}</p>` : ""}
+  `);
+  const text = "NEW PRIVATE EVENT INQUIRY\n\n" + contact.concat(eventRows(ev)).map(([k, v]) => k + ": " + v).join("\n") +
+    (ev.notes ? "\n\nNotes: " + ev.notes : "") + "\n\nReply to this email to reach them.";
+  return { subject, html, text };
+}
+
+function customerEventEmail(ev) {
+  const firstName = ev.name.split(" ")[0];
+  const subject = "We received your private event inquiry: Perfetto Italian Restaurant";
+  const html = layout(`Thanks, ${firstName}! Let's plan your event.`, `
+    <p style="margin:0 0 20px;">We received your inquiry and will be in touch within one business day to talk about dates, menu and details. Nothing is booked or charged yet.</p>
+    <h2 style="font-size:16px;margin:0 0 6px;">What you told us</h2>
+    ${detailsTableHtml(eventRows(ev))}
+    ${ev.notes ? `<h2 style="font-size:16px;margin:4px 0 6px;">Your notes</h2><p style="margin:0;white-space:pre-wrap;">${escapeHtml(ev.notes)}</p>` : ""}
+    <p style="margin:24px 0 0;">Questions? Just reply to this email or call us at <a href="${DATA.info.phoneHref}" style="color:#b8402f;">${escapeHtml(DATA.info.phone)}</a>.</p>
+    <p style="margin:16px 0 0;">Thank you,<br>The Perfetto family</p>
+  `);
+  const text = `Thanks, ${firstName}! We received your private event inquiry and will be in touch within one business day.\n\n` +
+    eventRows(ev).map(([k, v]) => k + ": " + v).join("\n") + (ev.notes ? "\n\nNotes: " + ev.notes : "") +
+    `\n\nQuestions? Reply to this email or call ${DATA.info.phone}.\n\nThe Perfetto family`;
+  return { subject, html, text };
+}
+
+/* ---------- sending: restaurant copy first, then the customer's confirmation ---------- */
+
+async function deliver(env, origin, customerAddress, ownerMsg, customerMsg) {
   const { RESEND_API_KEY, CATERING_TO_EMAIL, CATERING_FROM_EMAIL } = env;
   if (!RESEND_API_KEY || !CATERING_TO_EMAIL || !CATERING_FROM_EMAIL) {
     console.error("Missing RESEND_API_KEY, CATERING_TO_EMAIL or CATERING_FROM_EMAIL");
@@ -248,10 +324,9 @@ async function handleOrder(request, env, origin) {
 
   // 1. The restaurant's copy: if this fails, the customer is told to call
   try {
-    const r = restaurantEmail(order, est);
     await sendEmail(RESEND_API_KEY, {
-      from: CATERING_FROM_EMAIL, to: restaurantInbox, reply_to: order.email,
-      subject: r.subject, html: r.html, text: r.text,
+      from: CATERING_FROM_EMAIL, to: restaurantInbox, reply_to: customerAddress,
+      subject: ownerMsg.subject, html: ownerMsg.html, text: ownerMsg.text,
     });
   } catch (err) {
     console.error("Restaurant email failed:", err.message);
@@ -261,10 +336,9 @@ async function handleOrder(request, env, origin) {
   // 2. The customer's confirmation: nice to have, the request is already in
   let confirmationSent = true;
   try {
-    const c = customerEmail(order, est);
     await sendEmail(RESEND_API_KEY, {
-      from: CATERING_FROM_EMAIL, to: [order.email], reply_to: restaurantInbox,
-      subject: c.subject, html: c.html, text: c.text,
+      from: CATERING_FROM_EMAIL, to: [customerAddress], reply_to: restaurantInbox,
+      subject: customerMsg.subject, html: customerMsg.html, text: customerMsg.text,
     });
   } catch (err) {
     confirmationSent = false;
@@ -272,6 +346,31 @@ async function handleOrder(request, env, origin) {
   }
 
   return respond(200, { ok: true, confirmationSent }, origin);
+}
+
+async function handleRequest(request, env, origin) {
+  const rawBody = await request.text();
+  if (rawBody.length > MAX_BODY) return respond(413, { error: "Request too large." }, origin);
+
+  let parsed;
+  try { parsed = JSON.parse(rawBody); } catch (e) { return respond(400, { error: "Invalid request." }, origin); }
+
+  // Private event inquiry (events.html)
+  if (parsed && parsed.kind === "event") {
+    const ev = readEvent(parsed);
+    if (ev.website) return respond(200, { ok: true }, origin); // spam trap
+    const problem = findEventProblem(ev);
+    if (problem) return respond(400, { error: problem }, origin);
+    return deliver(env, origin, ev.email, restaurantEventEmail(ev), customerEventEmail(ev));
+  }
+
+  // Catering order (order.html)
+  const order = readOrder(parsed);
+  if (order.website) return respond(200, { ok: true }, origin); // spam trap filled in: pretend it worked
+  const est = EST.estimate(order, DATA);
+  const problem = findProblem(order, est);
+  if (problem) return respond(400, { error: problem }, origin);
+  return deliver(env, origin, order.email, restaurantEmail(order, est), customerEmail(order, est));
 }
 
 export default {
@@ -294,9 +393,9 @@ export default {
     if (request.method !== "POST") return respond(405, { error: "Method not allowed" }, origin);
     if (!origin) return respond(403, { error: "Not allowed." }, "");
 
-    return handleOrder(request, env, origin);
+    return handleRequest(request, env, origin);
   },
 };
 
 // exposed for tests
-export const _internal = { readOrder, findProblem, restaurantEmail, customerEmail, formatDate, formatTime };
+export const _internal = { readOrder, findProblem, restaurantEmail, customerEmail, readEvent, findEventProblem, formatDate, formatTime };
