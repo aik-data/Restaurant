@@ -17,10 +17,19 @@ export default function MenuBoard({ sections, photos }: { sections: Section[]; p
   const [tab, setTab] = useState(sections[0]?.id ?? "");
   const listRef = useRef<HTMLDivElement>(null);
 
-  // Keep the chosen tab in view on phones, where the tab row scrolls sideways
+  // Phones: the tab row scrolls sideways; centre the chosen tab in it. Only the row
+  // scrolls (never the page), and nothing moves when the menu first loads.
+  const firstRun = useRef(true);
   useEffect(() => {
-    const el = listRef.current?.querySelector<HTMLElement>(`[data-value="${tab}"]`);
-    el?.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
+    if (firstRun.current) {
+      firstRun.current = false;
+      return;
+    }
+    const strip = listRef.current;
+    const el = strip?.querySelector<HTMLElement>(`[data-value="${tab}"]`);
+    if (!strip || !el) return;
+    const a = el.getBoundingClientRect(), b = strip.getBoundingClientRect();
+    strip.scrollBy({ left: a.left - b.left - (b.width - a.width) / 2, behavior: "smooth" });
   }, [tab]);
 
   return (
@@ -83,11 +92,13 @@ function MenuItem({ item, index, photo }: { item: Item; index: number; photo?: P
       <div className="flex items-baseline gap-2.5">
         <span className="font-display text-[1.38rem] leading-tight">
           {item.name}
+          {item.favorite && " "}
           {item.favorite && (
-            <span className="ml-2.5 inline-block align-[0.25em] font-sans text-[0.62rem] font-semibold tracking-[0.16em] text-gold-ink uppercase">House favorite</span>
+            <span className="ml-1.5 inline-block align-[0.25em] font-sans text-[0.62rem] font-semibold tracking-[0.16em] text-gold-ink uppercase">House favorite</span>
           )}
+          {photo && " "}
           {photo && (
-            <span className="ml-2 hidden align-[0.25em] font-sans text-[0.62rem] tracking-[0.16em] text-gold-ink uppercase opacity-0 transition-opacity duration-300 group-hover/item:opacity-100 pointer-fine:inline">
+            <span className="ml-1 hidden align-[0.25em] font-sans text-[0.62rem] tracking-[0.16em] text-gold-ink uppercase opacity-0 transition-opacity duration-300 group-hover/item:opacity-100 pointer-fine:inline">
               ◦ photo
             </span>
           )}
@@ -141,8 +152,20 @@ function PhotoPreview({ photos }: { photos: Record<string, Photo> }) {
         if (next) setName(next);
       }
     };
+    // the list can scroll under a still cursor, or the cursor can leave the window:
+    // hide the photo until the next move tells us what's under the cursor
+    const hide = () => {
+      current = "";
+      setOn(false);
+    };
     window.addEventListener("pointermove", move, { passive: true });
-    return () => window.removeEventListener("pointermove", move);
+    window.addEventListener("scroll", hide, { passive: true });
+    document.documentElement.addEventListener("pointerleave", hide);
+    return () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("scroll", hide);
+      document.documentElement.removeEventListener("pointerleave", hide);
+    };
   }, [tx, ty, x, y]);
 
   if (!enabled) return null;

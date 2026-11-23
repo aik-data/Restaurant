@@ -3,7 +3,7 @@ import Layout from "@/layouts/Layout.astro";
 import { buttonVariants } from "@/components/ui/button";
 import { asset } from "@/lib/utils";
 ---
-<Layout page="notfound" title="Page not found | Perfetto Italian Restaurant" description="This page doesn't exist. Find the menu, catering and private events at Perfetto Italian Restaurant in Downtown Tehachapi.">
+<Layout page="notfound" canonical={false} title="Page not found | Perfetto Italian Restaurant" description="This page doesn't exist. Find the menu, catering and private events at Perfetto Italian Restaurant in Downtown Tehachapi.">
   <section class="surface-paper grid min-h-[78vh] place-items-center pt-(--header-h) text-center">
     <div class="container-site py-24">
       <p class="eyebrow mb-6">Page not found</p>

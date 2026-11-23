@@ -25,9 +25,12 @@ export function fieldInvalid(name: string, value: string) {
   if (!v) return true;
   if (name === "email") return !EMAIL.test(v);
   if (name === "guests") {
-    const n = Number(v);
-    return !Number.isInteger(n) || n < 1 || n > 1000;
+    // whole numbers only ("1e2" is a valid number input, but it isn't 100 guests to the price check)
+    if (!/^\d+$/.test(v)) return true;
+    const n = parseInt(v, 10);
+    return n < 1 || n > 1000;
   }
+  if (name === "phone") return v.replace(/\D/g, "").length < 7;
   if (name === "date") return v < twoDaysOut();
   return false;
 }
@@ -35,10 +38,13 @@ export function fieldInvalid(name: string, value: string) {
 export function Section({ n, title, optional, children }: { n: number; title: string; optional?: boolean; children: ReactNode }) {
   return (
     <fieldset className="m-0 mb-6 min-w-0 border-0 border-t border-border px-0 pt-6 pb-7">
-      <legend className="float-left mb-5 flex w-full items-baseline gap-3.5 p-0 font-display text-[clamp(1.7rem,2.6vw,2.1rem)] leading-[1.1] font-light text-ink">
-        <span className="font-sans text-[0.85rem] font-semibold text-gold-ink tabular-nums">{String(n).padStart(2, "0")}</span>
-        {title}
-        {optional && <span className="font-sans text-[0.74rem] font-normal tracking-[0.1em] text-faint uppercase">(optional)</span>}
+      <legend className="float-left mb-5 w-full p-0">
+        <h2 className="m-0 flex items-baseline gap-3.5 font-display text-[clamp(1.7rem,2.6vw,2.1rem)] leading-[1.1] font-light text-ink">
+          <span className="font-sans text-[0.85rem] font-semibold text-gold-ink tabular-nums">{String(n).padStart(2, "0")}</span>{" "}
+          {title}
+          {optional && " "}
+          {optional && <span className="font-sans text-[0.74rem] font-normal tracking-[0.1em] text-faint uppercase">(optional)</span>}
+        </h2>
       </legend>
       <div className="clear-both">{children}</div>
     </fieldset>
@@ -50,7 +56,8 @@ export function Field({ id, label, invalid, optional, className, children }: { i
     <div className={cn("flex flex-col gap-2", className)}>
       <label htmlFor={id} className={cn("text-[0.78rem] font-semibold tracking-[0.12em] text-ink-soft uppercase", invalid && "text-tomato")}>
         {label}
-        {optional && <span className="ml-1.5 font-normal tracking-[0.1em] text-faint">(optional)</span>}
+        {optional && " "}
+        {optional && <span className="ml-1 font-normal tracking-[0.1em] text-faint">(optional)</span>}
       </label>
       {children}
     </div>
@@ -97,7 +104,7 @@ export function SummaryCard({ title, children, ref }: { title: string; children:
       ref={ref}
       className="surface-night sticky top-[calc(var(--header-h)+24px)] scroll-mt-[calc(var(--header-h)+16px)] rounded-[10px] bg-char px-7 pt-8 pb-6 shadow-[0_40px_70px_-40px_rgb(15_12_10/0.8)] max-[1060px]:static"
     >
-      <h3 className="mb-4 text-[1.8rem]">{title}</h3>
+      <h2 className="mb-4 text-[1.8rem]">{title}</h2>
       {children}
     </aside>
   );
@@ -118,7 +125,7 @@ export function FormMessage({ msg }: { msg: { kind: "ok" | "err"; body: ReactNod
             exit={{ opacity: 0 }}
             transition={{ duration: 0.35 }}
             className={cn(
-              "mt-4 rounded-md border px-4 py-3.5 [&_a]:text-cream",
+              "mt-4 rounded-md border px-4 py-3.5 [&_a]:whitespace-nowrap [&_a]:text-cream [&_a]:underline",
               msg.kind === "ok" ? "border-open/35 bg-open/12 text-[#CFF0D9]" : "border-tomato/45 bg-tomato/14 text-[#FFD6CC]"
             )}
           >

@@ -14,7 +14,7 @@ export default function TraysAccordion({ trays, extras, drinks }: { trays: { gro
       <AccordionItem value="trays" className="border-b-0">
         <AccordionTrigger className="items-baseline gap-x-6 py-7 font-display text-[clamp(1.7rem,2.8vw,2.3rem)] font-light text-cream hover:no-underline [&>svg]:size-6 [&>svg]:self-center [&>svg]:text-cream">
           <span className="flex flex-wrap items-baseline gap-x-6 gap-y-1">
-            Trays, extras &amp; drinks
+            Trays, extras &amp; drinks{" "}
             <small className="font-sans text-[0.8rem] tracking-[0.14em] text-faint uppercase">Half pan serves 8–10 · Full pan serves 18–22</small>
           </span>
         </AccordionTrigger>

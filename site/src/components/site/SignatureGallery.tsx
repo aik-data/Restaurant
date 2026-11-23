@@ -74,7 +74,11 @@ export default function SignatureGallery({ dishes, menuHref }: { dishes: Dish[];
 
           <div
             ref={viewport}
-            className={cn(pinned ? "overflow-hidden" : "snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden")}
+            // on phones the row scrolls sideways; keyboard users can focus it and use the arrow keys
+            tabIndex={pinned ? undefined : 0}
+            role={pinned ? undefined : "region"}
+            aria-label={pinned ? undefined : "Signature dishes, scroll sideways"}
+            className={cn(pinned ? "overflow-hidden" : "snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] focus-visible:outline-offset-[-2px] [&::-webkit-scrollbar]:hidden")}
           >
             <motion.div
               ref={track}

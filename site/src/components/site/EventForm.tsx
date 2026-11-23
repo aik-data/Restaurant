@@ -38,9 +38,9 @@ export default function EventForm({ endpoint }: { endpoint: string }) {
   // Optional dropdowns: "Not sure yet" clears the value
   const pick = (k: keyof Fields, label: string, options: string[], none: string) => (
     <Field id={`f-${k}`} label={label} optional={k === "budget"}>
-      <Select value={f[k] || "__none"} onValueChange={(v) => set(k)(v === "__none" ? "" : v)}>
+      <Select value={f[k]} onValueChange={(v) => set(k)(v === "__none" ? "" : v)}>
         <SelectTrigger id={`f-${k}`} className={cn(inputClass, "w-full")}>
-          <SelectValue />
+          <SelectValue placeholder={none} />
         </SelectTrigger>
         <SelectContent position="popper" className="surface-paper">
           <SelectItem value="__none">{none}</SelectItem>
@@ -162,7 +162,7 @@ export default function EventForm({ endpoint }: { endpoint: string }) {
           <Section n={2} title="Your contact info">
             <div className="grid grid-cols-2 gap-x-5 gap-y-4 max-[560px]:grid-cols-1">
               <Field id="f-name" label="Name" invalid={invalid.has("name")}>
-                <Input id="f-name" autoComplete="name" value={f.name} onChange={(e) => set("name")(e.target.value)} aria-invalid={invalid.has("name") || undefined} className={inputClass} />
+                <Input id="f-name" type="text" autoComplete="name" value={f.name} onChange={(e) => set("name")(e.target.value)} aria-invalid={invalid.has("name") || undefined} className={inputClass} />
               </Field>
               <Field id="f-phone" label="Phone" invalid={invalid.has("phone")}>
                 <Input id="f-phone" type="tel" autoComplete="tel" value={f.phone} onChange={(e) => set("phone")(e.target.value)} aria-invalid={invalid.has("phone") || undefined} className={inputClass} />
@@ -210,7 +210,7 @@ export default function EventForm({ endpoint }: { endpoint: string }) {
             )}
           </Button>
           <p className="mt-3 mb-0 text-[0.8rem] text-faint">
-            Prefer to talk? Call <a className="text-cream" href={D.info.phoneHref}>{D.info.phone}</a>
+            Prefer to talk? Call <a className="whitespace-nowrap text-cream underline underline-offset-2" href={D.info.phoneHref}>{D.info.phone}</a>
           </p>
           <FormMessage msg={msg} />
         </SummaryCard>

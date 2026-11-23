@@ -72,7 +72,7 @@ const magnet = { padding: 40, magnetStrength: 4, maxOffset: 12 };
         <ul class="mt-11 grid list-none grid-cols-3 border-t border-border p-0 max-[560px]:grid-cols-1" data-reveal>
           {[["Fresh", "Pasta made in house"], ["Family", "Owned and run"], ["Tue–Sat", "Dinner from 4:30"]].map(([big, small], i) => (
             <li class:list={["pt-6 pr-4 max-[560px]:border-b max-[560px]:border-border max-[560px]:py-4", i > 0 && "border-l border-border pl-6 max-[560px]:border-l-0 max-[560px]:pl-0"]}>
-              <strong class="block font-display text-[2rem] leading-[1.1] font-light text-gold-2 italic">{big}</strong>
+              <strong class="block font-display text-[2rem] leading-[1.1] font-light text-gold-2 italic">{big}</strong>{" "}
               <span class="text-[0.9rem] text-muted-foreground">{small}</span>
             </li>
           ))}
@@ -92,7 +92,7 @@ const magnet = { padding: 40, magnetStrength: 4, maxOffset: 12 };
         <p class="eyebrow mb-5" data-reveal>The menu</p>
         <h2 id="menuTitle" class="display-2 mb-3" data-words>Dinner <em>menu</em></h2>
         <p class="m-0 text-ink-soft" data-reveal>
-          Tuesday to Saturday · 4:30 to 8 ·{" "}<a class="text-ink underline-offset-[3px]" href={info.orderOnline} target="_blank" rel="noopener">Order pickup online ↗</a>
+          Tuesday to Saturday · 4:30 to 8 ·{" "}<a class="text-ink underline underline-offset-[3px]" href={info.orderOnline} target="_blank" rel="noopener">Order pickup online ↗</a>
         </p>
       </header>
       <MenuBoard client:visible sections={D.menu} photos={photos} />
@@ -145,7 +145,7 @@ const magnet = { padding: 40, magnetStrength: 4, maxOffset: 12 };
       </ol>
 
       <h3 class="display-3 mb-8 flex flex-wrap items-baseline gap-x-6 gap-y-1.5" data-reveal>
-        Per-person packages
+        Per-person packages{" "}
         <small class="font-sans text-[0.8rem] tracking-[0.14em] text-faint uppercase">Choose your dishes when you order</small>
       </h3>
       <div class="mb-6 grid grid-cols-[repeat(auto-fit,minmax(255px,1fr))] items-stretch gap-[1.4rem]">
@@ -170,10 +170,10 @@ const magnet = { padding: 40, magnetStrength: 4, maxOffset: 12 };
               </p>
               <ul class="m-0 mb-6 flex-1 list-none border-t border-border p-0 text-[0.93rem] leading-[1.45]">
                 {p.boxed && (
-                  <li class="border-b border-border py-2.5"><strong class="block font-medium">Mix and match boxes</strong><span class="mt-0.5 block text-[0.84rem] text-faint">{(p.boxOptions ?? []).join(" · ")}</span></li>
+                  <li class="border-b border-border py-2.5"><strong class="block font-medium">Mix and match boxes</strong>{" "}<span class="mt-0.5 block text-[0.84rem] text-faint">{(p.boxOptions ?? []).join(" · ")}</span></li>
                 )}
                 {(p.choices || []).map((c) => (
-                  <li class="border-b border-border py-2.5"><strong class="block font-medium">{choiceTitle(c)}</strong><span class="mt-0.5 block text-[0.84rem] text-faint">{c.options.join(" · ")}</span></li>
+                  <li class="border-b border-border py-2.5"><strong class="block font-medium">{choiceTitle(c)}</strong>{" "}<span class="mt-0.5 block text-[0.84rem] text-faint">{c.options.join(" · ")}</span></li>
                 ))}
                 {p.included.map((x) => <li class="border-b border-border py-2.5">{x}</li>)}
                 {(p.upgrades || []).map((u) => (
@@ -261,7 +261,7 @@ const magnet = { padding: 40, magnetStrength: 4, maxOffset: 12 };
         <address class="mb-8 text-[1.12rem] leading-[1.7] not-italic" data-reveal>
           {info.name}<br />
           {info.address}, {info.city}<br />
-          <a class="border-b border-current no-underline" href={info.phoneHref}>{info.phone}</a>
+          <a class="border-b border-current whitespace-nowrap no-underline" href={info.phoneHref}>{info.phone}</a>
         </address>
         <div class="mb-5 rounded-md bg-white px-7 py-6 shadow-[0_20px_40px_-30px_rgb(28_22_18/.45)]" data-reveal>
           <OpenStatus client:idle schedule={info.schedule} className="font-medium text-ink" />

@@ -22,9 +22,9 @@ const steps = ["Event details", "Package & dishes", "Trays & extras", "Pickup or
     lede="Choose a package and your dishes, add trays if you like, and see your estimate as you go. No payment now: we'll confirm the details with you, then email a secure invoice."
   >
     <Fragment slot="title">Build your <em>catering order</em></Fragment>
-    <ol class="m-0 flex list-none flex-wrap gap-x-6 gap-y-2 p-0" aria-label="Steps">
+    <ol class="m-0 flex list-none flex-wrap gap-x-6 gap-y-2 p-0">
       {steps.map((s, i) => (
-        <li class="text-[0.86rem] text-cream/80"><span class="mr-2 text-gold tabular-nums">{String(i + 1).padStart(2, "0")}</span>{s}</li>
+        <li class="text-[0.86rem] text-cream/80"><span class="mr-1 text-gold tabular-nums">{String(i + 1).padStart(2, "0")}</span>{" "}{s}</li>
       ))}
     </ol>
   </PageHero>

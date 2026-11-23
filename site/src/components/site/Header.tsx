@@ -66,14 +66,14 @@ export default function Header({ page, schedule, phone, phoneHref }: { page: Pag
       onFocus={() => setTucked(false)}
       className={cn(
         "fixed inset-x-0 top-0 z-40 border-b border-transparent transition-[translate,background-color,border-color,backdrop-filter] duration-[600ms] ease-out-expo",
-        solid && "border-border bg-night/80 backdrop-blur-lg backdrop-saturate-[1.2]",
+        solid && "border-border bg-night/90 backdrop-blur-lg backdrop-saturate-[1.2]",
         tucked && !open && "-translate-y-full"
       )}
       style={{ viewTransitionName: "site-header" }}
     >
       <nav aria-label="Main" className="container-site flex h-(--header-h) items-center justify-between gap-6">
-        <a href={home ? "#top" : asset("")} className="group flex items-baseline gap-3 text-cream no-underline" aria-label="Perfetto Italian Restaurant, home">
-          <span className="font-display text-[2rem] leading-none tracking-[-0.01em] italic">Perfetto</span>
+        <a href={home ? "#top" : asset("")} className="group flex items-baseline gap-3 text-cream no-underline">
+          <span className="font-display text-[2rem] leading-none tracking-[-0.01em] italic">Perfetto</span>{" "}
           <span className="hidden text-[0.7rem] font-medium tracking-[0.26em] text-faint uppercase xl:inline">Italian Restaurant</span>
         </a>
 

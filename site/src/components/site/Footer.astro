@@ -25,15 +25,15 @@ const h4 = "mb-3 font-sans text-[0.74rem] font-semibold tracking-[0.22em] text-g
         <p class="max-w-[24rem]">Homemade Italian in Downtown Tehachapi. Family owned and run.</p>
       </div>
       <div>
-        <h4 class={h4}>Visit</h4>
-        <p>{D.info.address}<br />{D.info.city}<br /><a class="text-cream no-underline hover:text-gold-2" href={D.info.phoneHref}>{D.info.phone}</a></p>
+        <h2 class={h4}>Visit</h2>
+        <p>{D.info.address}<br />{D.info.city}<br /><a class="whitespace-nowrap text-cream no-underline hover:text-gold-2" href={D.info.phoneHref}>{D.info.phone}</a></p>
       </div>
       <div>
-        <h4 class={h4}>Dinner</h4>
+        <h2 class={h4}>Dinner</h2>
         <p>Tuesday – Saturday<br />4:30 – 8:00 PM<br />Closed Sunday &amp; Monday</p>
       </div>
       <div>
-        <h4 class={h4}>Explore</h4>
+        <h2 class={h4}>Explore</h2>
         <ul class="m-0 list-none p-0">
           {explore.map((l) => <li><a class="text-cream no-underline transition-colors hover:text-gold-2" href={l.href}>{l.label}</a></li>)}
         </ul>

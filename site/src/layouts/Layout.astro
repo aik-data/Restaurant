@@ -15,12 +15,15 @@ interface Props {
   page: "home" | "order" | "events" | "notfound";
   /** The largest photo above the fold, preloaded so it shows sooner */
   lcp?: Pic;
+  /** false for pages that shouldn't name a canonical address (the 404 page) */
+  canonical?: boolean;
 }
-const { title, description, page, lcp } = Astro.props;
+const { title, description, page, lcp, canonical = true } = Astro.props;
 const home = page === "home";
 const share = await pic("img/hero-pasta.jpg", [1200], 78, "jpg");
 const shareUrl = new URL(share.src, Astro.site).href;
-const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
+// "/Restaurant/index.html" -> "/Restaurant/", the address every link uses
+const pageUrl = new URL(Astro.url.pathname.replace(/index\.html$/, ""), Astro.site).href;
 
 // Local SEO: tells Google this is a restaurant that caters
 const ld = {
@@ -56,11 +59,11 @@ const ld = {
     <meta name="description" content={description} />
     <meta name="theme-color" content="#0F0C0A" />
     <link rel="icon" href={asset("favicon.svg")} type="image/svg+xml" />
-    <link rel="canonical" href={pageUrl} />
+    {canonical && <link rel="canonical" href={pageUrl} />}
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content={pageUrl} />
+    {canonical && <meta property="og:url" content={pageUrl} />}
     <meta property="og:image" content={shareUrl} />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="preload" as="font" type="font/woff2" href={serifFont} crossorigin />
@@ -74,7 +77,7 @@ const ld = {
 
     {home && (
       <div class="loader" id="loader" aria-hidden="true">
-        <span class="loader-mark">Perfetto</span>
+        <span class="loader-mark">Perfetto</span>{" "}
         <span class="loader-sub">Downtown Tehachapi</span>
       </div>
     )}
@@ -117,6 +120,7 @@ const ld = {
         html[data-page="home"] #proto-banner { bottom: 68px; }
         html.past-hero[data-page="home"] #proto-banner { bottom: 84px; }
       }
+      @media (max-width: 1060px) { html.has-total-bar #proto-banner { bottom: 84px; } }
       #proto-banner.is-dismissed { display: none; }
     </style>
   </body>

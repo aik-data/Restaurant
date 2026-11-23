@@ -1,8 +1,9 @@
 /*
  * Perfetto catering email backend (Cloudflare Worker)
  * ------------------------------------------------------------
- * The order page (docs/order.html) POSTs catering requests here, and the
- * private events page (docs/events.html) POSTs event inquiries. The Worker:
+ * The order page (site/src/pages/order.astro, published as /order.html) POSTs
+ * catering requests here, and the private events page (events.astro,
+ * /events.html) POSTs event inquiries. The Worker:
  *   1. checks the request (for orders, it recomputes the estimate from the
  *      site's own menu data, so prices in the emails can't be tampered with)
  *   2. emails the restaurant through Resend (Reply goes to the customer)
@@ -72,12 +73,17 @@ function formatTime(hhmm) {
 
 /* ---------- request checks ---------- */
 
+// Guest counts must be whole numbers ("1e2" would otherwise be read as 1)
+function wholeNumber(v) {
+  return typeof v === "number" ? (Number.isInteger(v) ? String(v) : "") : /^\s*\d+\s*$/.test(String(v ?? "")) ? String(v).trim() : "";
+}
+
 function readOrder(raw) {
   const o = raw && typeof raw === "object" ? raw : {};
   const order = {};
   Object.keys(LIMITS).forEach((k) => { order[k] = clean(o[k], LIMITS[k]); });
   ["eventType", "date", "time", "name", "phone", "email", "address"].forEach((k) => { order[k] = oneLine(order[k]); });
-  order.guests = o.guests;
+  order.guests = wholeNumber(o.guests);
   order.packageId = clean(o.packageId, 40);
   order.picks = o.picks && typeof o.picks === "object" ? o.picks : {};
   order.upgrades = o.upgrades && typeof o.upgrades === "object" ? o.upgrades : {};
@@ -249,7 +255,7 @@ function readEvent(raw) {
   const ev = {};
   Object.keys(EVENT_LIMITS).forEach((k) => { ev[k] = clean(o[k], EVENT_LIMITS[k]); });
   Object.keys(EVENT_LIMITS).filter((k) => k !== "notes").forEach((k) => { ev[k] = oneLine(ev[k]); });
-  const g = parseInt(o.guests, 10);
+  const g = parseInt(wholeNumber(o.guests), 10);
   ev.guests = isNaN(g) || g < 0 ? 0 : Math.min(g, EST.MAX_GUESTS);
   ev.website = clean(o.website, 200);
   return ev;

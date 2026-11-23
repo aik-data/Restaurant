@@ -265,7 +265,7 @@ export default function OrderBuilder({ endpoint }: { endpoint: string }) {
                   )}
                 >
                   <RadioGroupItem id={`pkg-${o.id || "none"}`} value={o.id || "none"} className="sr-only" />
-                  <span className="pr-6 font-display text-[1.3rem] leading-tight font-normal text-ink">{o.name}</span>
+                  <span className="pr-6 font-display text-[1.3rem] leading-tight font-normal text-ink">{o.name}</span>{" "}
                   <span className="text-[0.84rem] leading-snug font-normal text-ink-soft">{o.note}</span>
                   {packageId === o.id && (
                     <motion.span
@@ -360,11 +360,11 @@ export default function OrderBuilder({ endpoint }: { endpoint: string }) {
           <Section n={3} title="Add trays & extras" optional>
             {D.trays.map((g) => (
               <div key={g.group} className="mt-7 first:mt-0">
-                <h4 className="kicker mb-1">{g.group}</h4>
+                <h3 className="kicker mb-1">{g.group}</h3>
                 {g.items.map((t) => (
                   <div key={t.id} className="grid grid-cols-[1fr_auto_auto] items-center gap-x-4 gap-y-2 border-b border-border py-2.5 max-[560px]:grid-cols-2">
                     <span className="max-[560px]:col-span-2">
-                      {t.name}
+                      {t.name}{" "}
                       <small className="mt-0.5 block text-[0.82rem] text-ink-soft">Half {money(t.half)} · Full {money(t.full)}</small>
                     </span>
                     {(["half", "full"] as const).map((size) => (
@@ -382,11 +382,11 @@ export default function OrderBuilder({ endpoint }: { endpoint: string }) {
               { title: "Drinks", items: D.drinks },
             ].map((block) => (
               <div key={block.title} className="mt-7">
-                <h4 className="kicker mb-1">{block.title}</h4>
+                <h3 className="kicker mb-1">{block.title}</h3>
                 {block.items.map((x) => (
                   <div key={x.id} className="grid grid-cols-[1fr_auto] items-center gap-4 border-b border-border py-2.5">
                     <span>
-                      {x.name}
+                      {x.name}{" "}
                       <small className="mt-0.5 block text-[0.82rem] text-ink-soft">
                         {money(x.price)} per {x.unit}
                         {x.note ? ` · ${x.note}` : ""}
@@ -400,7 +400,16 @@ export default function OrderBuilder({ endpoint }: { endpoint: string }) {
           </Section>
 
           <Section n={4} title="Pickup or delivery">
-            <RadioGroup value={fulfillment} onValueChange={(v) => setFulfillment(v as "pickup" | "delivery")} className="mb-4 flex flex-wrap gap-x-8 gap-y-3" aria-label="Pickup or delivery">
+            <RadioGroup
+              value={fulfillment}
+              onValueChange={(v) => {
+                setFulfillment(v as "pickup" | "delivery");
+                // the address field hides for pickup, so its error goes with it
+                if (v === "pickup" && invalid.has("address")) setInvalid((s) => { const n = new Set(s); n.delete("address"); return n; });
+              }}
+              className="mb-4 flex flex-wrap gap-x-8 gap-y-3"
+              aria-label="Pickup or delivery"
+            >
               {[
                 { v: "pickup", label: "Pickup at the restaurant", note: "(free)" },
                 { v: "delivery", label: "Delivery", note: `(${money(D.services.deliveryFee)} in the Tehachapi area)` },
@@ -424,7 +433,7 @@ export default function OrderBuilder({ endpoint }: { endpoint: string }) {
                 <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.4, ease: EASE }} className="overflow-hidden">
                   <div className="pt-4">
                     <Field id="f-address" label="Delivery address" invalid={invalid.has("address")}>
-                      <Input id="f-address" autoComplete="street-address" value={f.address} onChange={(e) => set("address")(e.target.value)} aria-invalid={invalid.has("address") || undefined} className={inputClass} />
+                      <Input id="f-address" type="text" autoComplete="street-address" value={f.address} onChange={(e) => set("address")(e.target.value)} aria-invalid={invalid.has("address") || undefined} className={inputClass} />
                     </Field>
                   </div>
                 </motion.div>
@@ -435,7 +444,7 @@ export default function OrderBuilder({ endpoint }: { endpoint: string }) {
           <Section n={5} title="Your contact info">
             <div className="grid grid-cols-2 gap-x-5 gap-y-4 max-[560px]:grid-cols-1">
               <Field id="f-name" label="Name" invalid={invalid.has("name")}>
-                <Input id="f-name" autoComplete="name" value={f.name} onChange={(e) => set("name")(e.target.value)} aria-invalid={invalid.has("name") || undefined} className={inputClass} required />
+                <Input id="f-name" type="text" autoComplete="name" value={f.name} onChange={(e) => set("name")(e.target.value)} aria-invalid={invalid.has("name") || undefined} className={inputClass} required />
               </Field>
               <Field id="f-phone" label="Phone" invalid={invalid.has("phone")}>
                 <Input id="f-phone" type="tel" autoComplete="tel" value={f.phone} onChange={(e) => set("phone")(e.target.value)} aria-invalid={invalid.has("phone") || undefined} className={inputClass} required />
@@ -499,7 +508,7 @@ export default function OrderBuilder({ endpoint }: { endpoint: string }) {
             )}
           </Button>
           <p className="mt-3 mb-0 text-[0.8rem] text-faint">
-            Prefer to talk? Call <a className="text-cream" href={D.info.phoneHref}>{D.info.phone}</a>
+            Prefer to talk? Call <a className="whitespace-nowrap text-cream underline underline-offset-2" href={D.info.phoneHref}>{D.info.phone}</a>
           </p>
           <FormMessage msg={msg} />
         </SummaryCard>
@@ -527,7 +536,7 @@ function PickGroup({ group, title, count, complete, incomplete, children }: { gr
       className={cn("mb-6 border-l-2 border-ink/15 py-0.5 pl-4 transition-colors duration-300", complete && "border-l-[#6E8B5E]", incomplete && !complete && "border-l-tomato")}
     >
       <div className="mb-3 flex items-baseline justify-between gap-4">
-        <span className={cn("font-semibold", incomplete && !complete && "text-tomato")}>{title}</span>
+        <span className={cn("font-semibold", incomplete && !complete && "text-tomato")}>{title}</span>{" "}
         <span className={cn("text-[0.8rem] whitespace-nowrap text-faint", complete && "font-semibold text-[#4F7040]")} aria-live="polite">
           {complete && <IconCheck size={13} stroke={2.5} className="mr-1 inline align-[-1px]" />}
           {count}
@@ -571,6 +580,11 @@ function Chips({ choice, values, onChange, incomplete, taken = [], last }: { cho
 }
 
 function MobileTotal({ total, show, onReview }: { total: number; show: boolean; onReview: () => void }) {
+  // lets the page move the prototype notice up out of the bar's way
+  useEffect(() => {
+    document.documentElement.classList.toggle("has-total-bar", show);
+    return () => document.documentElement.classList.remove("has-total-bar");
+  }, [show]);
   return (
     <AnimatePresence>
       {show && (
