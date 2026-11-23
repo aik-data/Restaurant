@@ -1,13 +1,15 @@
-/* Perfetto Italian Restaurant — home page (menu, catering info, visit) */
+/* Perfetto Italian Restaurant — home page content (menu, dishes, catering, visit) */
 (function () {
   "use strict";
   var PF = window.PF, D = PF.D, $ = PF.$, $$ = PF.$$, money = PF.money, esc = PF.esc, choiceTitle = PF.choiceTitle;
+  var media = D.media || {};
+  var dishPhotos = media.dishes || {};
 
-  /* ---------- "Today on Green Street": open now / opening later / closed ---------- */
+  /* ---------- Live open status: open now / opening later / closed ---------- */
   (function openStatus() {
-    var el = $("#openStatus");
+    var els = $$("[data-open-status]");
     var s = D.info.schedule;
-    if (!el || !s) return;
+    if (!els.length || !s) return;
     try {
       var parts = {};
       new Intl.DateTimeFormat("en-US", { timeZone: s.timeZone, weekday: "short", hour: "numeric", minute: "numeric", hourCycle: "h23" })
@@ -16,59 +18,79 @@
       var mins = parseInt(parts.hour, 10) * 60 + parseInt(parts.minute, 10);
       var toMin = function (t) { var a = t.split(":"); return +a[0] * 60 + +a[1]; };
       var open = toMin(s.open), close = toMin(s.close);
-      var label = function (m) { var h = Math.floor(m / 60), mm = m % 60; return (h % 12 || 12) + (mm ? ":" + String(mm).padStart(2, "0") : ""); };
+      var label = function (m) { var h = Math.floor(m / 60), mm = m % 60; return (h % 12 || 12) + (mm ? ":" + String(mm).padStart(2, "0") : "") + (h < 12 ? " am" : " pm"); };
       var names = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
       var nextOpen = function (from) {
         for (var i = 1; i <= 7; i++) { var d = (from + i) % 7; if (s.days.indexOf(d) !== -1) return i === 1 ? "tomorrow" : names[d]; }
         return "soon";
       };
-      var text;
-      if (s.days.indexOf(day) !== -1 && mins < open) text = "Opening tonight at " + label(open);
-      else if (s.days.indexOf(day) !== -1 && mins < close) text = "Open now · until " + label(close);
-      else if (s.days.indexOf(day) !== -1) text = "Closed for tonight · back " + nextOpen(day) + " at " + label(open);
-      else text = "Closed today · back " + nextOpen(day) + " at " + label(open);
-      el.textContent = text;
-      el.classList.toggle("is-open", /^Open now/.test(text));
+      var isOpenDay = s.days.indexOf(day) !== -1, state, text;
+      if (isOpenDay && mins < open) { state = "soon"; text = "Opening tonight at " + label(open); }
+      else if (isOpenDay && mins < close) { state = "open"; text = "Open now · until " + label(close); }
+      else if (isOpenDay) { state = "closed"; text = "Closed for tonight · back " + nextOpen(day) + " at " + label(open); }
+      else { state = "closed"; text = "Closed today · back " + nextOpen(day) + " at " + label(open); }
+      els.forEach(function (el) {
+        el.textContent = text;
+        el.parentNode.setAttribute("data-state", state);
+      });
     } catch (e) { /* keep the default hours text */ }
   })();
 
-  /* ---------- Hours on the door sign ---------- */
+  /* ---------- Hours ---------- */
   $("#hoursList").innerHTML = D.info.hours.map(function (h) {
     return "<dt>" + esc(h.days) + "</dt><dd>" + esc(h.time) + "</dd>";
   }).join("");
 
-  /* ---------- House favorites, numbered like a menu ---------- */
-  var favs = [];
-  D.menu.forEach(function (sec) {
-    sec.items.forEach(function (it) { if (it.favorite) favs.push(it); });
-  });
-  $("#favList").innerHTML = favs.slice(0, 8).map(function (it, i) {
-    return '<li class="fav"><span class="fav-no">' + String(i + 1).padStart(2, "0") + "</span>" +
-      "<div><h3>" + esc(it.name) + "</h3>" + (it.desc ? "<p>" + esc(it.desc) + "</p>" : "") + "</div>" +
-      '<span class="fav-price">' + (it.price != null ? money(it.price) : "") + "</span></li>";
+  /* ---------- Signature dishes gallery ---------- */
+  var byName = {};
+  D.menu.forEach(function (sec) { sec.items.forEach(function (it) { byName[it.name] = it; }); });
+  $("#sigTrack").innerHTML = (media.signature || []).map(function (name, i) {
+    var it = byName[name] || { name: name }, ph = dishPhotos[name];
+    if (!ph) return "";
+    var small = ph.src.replace(/\.jpg$/, "-sm.jpg");
+    return '<article class="dish">' +
+      '<figure class="dish-media"><img src="' + small + '" srcset="' + small + " 900w, " + ph.src + ' 1600w" sizes="(max-width: 900px) 80vw, 32vw" alt="' + esc(name) + '" loading="lazy"></figure>' +
+      '<div class="dish-info"><span class="dish-no">' + String(i + 1).padStart(2, "0") + "</span>" +
+      "<h3>" + esc(name) + "</h3>" + (it.price != null ? '<span class="dish-price">' + money(it.price) + "</span>" : "") +
+      (it.desc ? "<p>" + esc(it.desc) + "</p>" : "") + "</div></article>";
   }).join("");
 
-  /* ---------- Overheard ---------- */
-  $("#reviewGrid").innerHTML = (D.reviews || []).map(function (r) {
-    return '<figure class="say"><blockquote>' + esc(r.quote) + "</blockquote><figcaption>" + esc(r.source) + "</figcaption></figure>";
+  /* ---------- Guests say: one quote at a time ---------- */
+  var reviews = D.reviews || [];
+  var stage = $("#reviewGrid"), dotsEl = $("#quoteDots");
+  stage.innerHTML = reviews.map(function (r, i) {
+    return '<figure class="review-quote' + (i === 0 ? " is-active" : "") + '"><blockquote>“' + esc(r.quote) + '”</blockquote><figcaption>' + esc(r.source) + "</figcaption></figure>";
   }).join("");
+  dotsEl.innerHTML = reviews.map(function (_, i) {
+    return '<button type="button" aria-label="Show review ' + (i + 1) + '"' + (i === 0 ? ' class="is-active"' : "") + "><span></span></button>";
+  }).join("");
+  var quotes = $$(".review-quote", stage), qDots = $$("button", dotsEl), q = 0, qTimer = null;
+  function showQuote(n) {
+    q = (n + quotes.length) % quotes.length;
+    quotes.forEach(function (el, i) { el.classList.toggle("is-active", i === q); });
+    qDots.forEach(function (el, i) { el.classList.toggle("is-active", i === q); });
+  }
+  function autoplay() { clearInterval(qTimer); qTimer = setInterval(function () { showQuote(q + 1); }, 6500); }
+  qDots.forEach(function (b, i) { b.addEventListener("click", function () { showQuote(i); autoplay(); }); });
+  if (quotes.length > 1) autoplay();
 
-  /* ---------- Menu card tabs ---------- */
+  /* ---------- Menu tabs ---------- */
   var tabsEl = $("#menuTabs");
   var panelsEl = $("#menuPanels");
 
   tabsEl.innerHTML = D.menu.map(function (sec, i) {
     return '<button class="menu-tab" role="tab" type="button" id="tab-' + sec.id + '" aria-controls="panel-' + sec.id +
       '" aria-selected="' + (i === 0) + '" tabindex="' + (i === 0 ? 0 : -1) + '">' + esc(sec.title) + "</button>";
-  }).join("");
+  }).join("") + '<span class="tab-ink" aria-hidden="true"></span>';
 
   panelsEl.innerHTML = D.menu.map(function (sec, i) {
     var items = sec.items.map(function (it) {
       var price = it.price != null
         ? '<span class="menu-item-price">' + money(it.price) + "</span>"
         : '<span class="menu-item-price tbd" title="Price to be confirmed">—</span>';
-      return '<li class="menu-item"><div class="menu-item-top"><span class="menu-item-name">' +
-        (it.favorite ? '<span class="fav-mark" title="House favorite" aria-label="House favorite">★</span>' : "") + esc(it.name) +
+      var ph = dishPhotos[it.name];
+      return '<li class="menu-item"' + (ph ? ' data-photo="' + ph.src.replace(/\.jpg$/, "-sm.jpg") + '"' : "") + '><div class="menu-item-top"><span class="menu-item-name">' +
+        esc(it.name) + (it.favorite ? '<span class="fav-mark" title="House favorite">House favorite</span>' : "") +
         '</span><span class="menu-item-dots" aria-hidden="true"></span>' + price + "</div>" +
         (it.desc ? '<p class="menu-item-desc">' + esc(it.desc) + "</p>" : "") + "</li>";
     }).join("");
@@ -77,14 +99,22 @@
       '</p></div><ul class="menu-list">' + items + "</ul></div>";
   }).join("");
 
-  var tabs = $$(".menu-tab", tabsEl);
+  var tabs = $$(".menu-tab", tabsEl), ink = $(".tab-ink", tabsEl);
+  function moveInk(tab) {
+    if (!ink || !tab) return;
+    ink.style.width = tab.offsetWidth + "px";
+    ink.style.transform = "translateX(" + tab.offsetLeft + "px)";
+  }
   function selectTab(tab) {
     tabs.forEach(function (t) {
       var on = t === tab;
       t.setAttribute("aria-selected", String(on));
       t.tabIndex = on ? 0 : -1;
-      $("#" + t.getAttribute("aria-controls")).hidden = !on;
+      var panel = $("#" + t.getAttribute("aria-controls"));
+      panel.hidden = !on;
+      if (on) { panel.classList.remove("is-in"); void panel.offsetWidth; panel.classList.add("is-in"); }
     });
+    moveInk(tab);
   }
   tabs.forEach(function (tab, i) {
     tab.addEventListener("click", function () { selectTab(tab); });
@@ -95,9 +125,12 @@
       if (next) { e.preventDefault(); next.focus(); selectTab(next); }
     });
   });
+  window.addEventListener("resize", function () { moveInk(tabsEl.querySelector('[aria-selected="true"]')); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { moveInk(tabs[0]); });
+  moveInk(tabs[0]);
   $("#menuNote").textContent = D.menuNote;
 
-  /* ---------- Catering packages as tear-off tickets ---------- */
+  /* ---------- Catering packages ---------- */
   $("#packages").innerHTML = D.packages.map(function (p) {
     var rows =
       (p.boxed ? "<li><strong>Mix and match boxes</strong><span class=\"pkg-opts\">" + p.boxOptions.map(esc).join(" · ") + "</span></li>" : "") +
@@ -108,18 +141,17 @@
       (p.upgrades || []).map(function (u) {
         return '<li class="pkg-upgrade"><strong>Optional: ' + esc(u.title.replace(/^Add /, "add ")) + "</strong> +" + money(u.perPerson) + " per person</li>";
       }).join("");
-    return '<article class="ticket' + (p.featured ? " featured" : "") + '">' +
-      (p.featured ? '<span class="ticket-stamp" aria-hidden="true">Most<br>popular</span>' : "") +
-      '<div class="ticket-head"><span class="ticket-tag">' + esc(p.tag) + "</span>" +
+    return '<article class="pkg' + (p.featured ? " featured" : "") + '" data-reveal>' +
+      (p.featured ? '<span class="pkg-badge">Most popular</span>' : "") +
+      '<p class="pkg-tag">' + esc(p.tag) + "</p>" +
       "<h4>" + esc(p.name) + "</h4>" +
-      '<p class="ticket-price">' + money(p.perPerson) + "<small>per person</small></p>" +
-      '<p class="ticket-min">Minimum ' + p.min + " guests</p></div>" +
-      '<div class="ticket-body"><ul>' + rows + "</ul>" +
-      '<a href="order.html?package=' + p.id + '" class="btn btn-block' + (p.featured ? "" : " btn-paper") + '">Order ' + esc(p.name) + "</a></div>" +
+      '<p class="pkg-price">' + money(p.perPerson) + "<small>per person · min " + p.min + "</small></p>" +
+      "<ul>" + rows + "</ul>" +
+      '<a href="order.html?package=' + p.id + '" class="btn btn-block ' + (p.featured ? "btn-gold" : "btn-ghost") + '">Order ' + esc(p.name) + "</a>" +
       "</article>";
   }).join("");
 
-  /* ---------- Trays, extras and drinks: the deli board ---------- */
+  /* ---------- Trays, extras and drinks ---------- */
   var trayCards = D.trays.map(function (g) {
     return '<div class="tray-card"><h4>' + esc(g.group) + '</h4><table class="tray-table"><thead><tr><th scope="col">Item</th><th scope="col">Half</th><th scope="col">Full</th></tr></thead><tbody>' +
       g.items.map(function (t) {

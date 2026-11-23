@@ -125,6 +125,35 @@
     },
   ],
 
+  /* ---------------- PHOTOS ----------------
+   * PLACEHOLDERS: free stock photos from Pexels (pexels.com, free for commercial
+   * use). Replace each file in docs/img with the restaurant's own photo of the
+   * same dish before launch, keeping the same file name. Pexels photo numbers
+   * are noted so the originals can be found again.
+   */
+  media: {
+    hero: [
+      { src: "img/hero-pasta.jpg", alt: "Fresh pasta being cut by hand", pexels: 1398688 },
+      { src: "img/hero-lasagna.jpg", alt: "Baked lasagna in a dark bowl", pexels: 31779545 },
+      { src: "img/hero-room.jpg", alt: "A warmly lit dining room in the evening", pexels: 776538 },
+      { src: "img/hero-penne.jpg", alt: "Penne with tomatoes and basil", pexels: 19805084 },
+    ],
+    // Dish photos, used by the signature dishes gallery and the menu hover preview
+    dishes: {
+      "Bolognese Lasagna": { src: "img/lasagna.jpg", pexels: 4079522 },
+      "Pasta Perfetto": { src: "img/pasta-perfetto.jpg", pexels: 17749744 },
+      "Shrimp Scampi": { src: "img/scampi.jpg", pexels: 37527475 },
+      "Fettuccine Alfredo": { src: "img/alfredo.jpg", pexels: 11220208 },
+      "Tiramisu": { src: "img/tiramisu.jpg", pexels: 20586637 },
+    },
+    signature: ["Bolognese Lasagna", "Pasta Perfetto", "Shrimp Scampi", "Fettuccine Alfredo", "Tiramisu"],
+    kitchen: { src: "img/kitchen-hands.jpg", pexels: 4377175 },
+    catering: { src: "img/catering.jpg", pexels: 4007053 },
+    cateringTrays: { src: "img/catering-trays.jpg", pexels: 5949889 },
+    events: { src: "img/events-table.jpg", pexels: 4992827 },
+    friends: { src: "img/friends.jpg", pexels: 6954047 },
+  },
+
   menuNote: "Ask about tonight's specials, like our seafood and sea bass specials. Vegan options available on request with notice. Generous portions, so plan on leftovers.",
 
   /* ---------------- GUEST REVIEWS ----------------
@@ -275,7 +304,7 @@
 
   cateringTerms: [
     { title: "Notice", text: "48 hours for most orders. One week for groups over 50." },
-    { title: "Pickup or delivery", text: "Free pickup on Green St. $25 delivery in the Tehachapi area. Ask us about Mojave, Cal City and Bakersfield." },
+    { title: "Pickup or delivery", text: "Free pickup at the restaurant. $25 delivery in the Tehachapi area. Ask us about Mojave, Cal City and Bakersfield." },
     { title: "Changes", text: "Final headcount and menu due 3 days before your event." },
     { title: "Dietary needs", text: "Vegetarian dishes on every package. Vegan and gluten-conscious options on request." },
   ],

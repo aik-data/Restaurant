@@ -6,9 +6,11 @@
   <!-- Preview mode: remove these two lines when the site is ready for customers -->
   <meta name="robots" content="noindex, nofollow">
   <script src="js/gate.js"></script>
-  <title>Perfetto Italian Restaurant | Tehachapi, CA | Dinner & Catering</title>
-  <meta name="description" content="Family-owned Italian restaurant on Green Street in downtown Tehachapi. House-made pasta, lasagna, chicken marsala and tiramisu. Catering for offices, weddings, teams and celebrations.">
-  <meta name="theme-color" content="#C73A22">
+  <!-- Play the intro once per visit (skipped for reduced motion) -->
+  <script>try{if(!sessionStorage.getItem("pf-intro")&&!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("intro")}catch(e){}</script>
+  <title>Perfetto Italian Restaurant | Downtown Tehachapi | Dinner & Catering</title>
+  <meta name="description" content="Family-owned Italian restaurant in Downtown Tehachapi. Fresh pasta, lasagna, veal, seafood and tiramisu. Dinner Tuesday to Saturday, catering for offices, weddings and celebrations, and private events.">
+  <meta name="theme-color" content="#0F0C0A">
 
   <!-- Local SEO: tells Google this is a restaurant that caters -->
   <script type="application/ld+json">
@@ -41,13 +43,20 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Gloock&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Yellowtail&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap" rel="stylesheet">
+  <link rel="preload" as="image" href="img/hero-pasta.jpg">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="home">
 
+  <!-- First-visit intro: the name, then the curtain lifts -->
+  <div class="loader" id="loader" aria-hidden="true">
+    <span class="loader-mark">Perfetto</span>
+    <span class="loader-sub">Downtown Tehachapi</span>
+  </div>
+
   <div class="proto-banner" id="protoBanner" role="note">
-    <span><strong>Prototype</strong> · some prices are still being confirmed</span>
+    <span><strong>Prototype</strong> · stock photos and some prices are placeholders</span>
     <button type="button" aria-label="Dismiss prototype notice" id="protoClose">&times;</button>
   </div>
 
@@ -55,7 +64,7 @@
     <nav class="nav wrap" aria-label="Main">
       <a href="#top" class="brand" aria-label="Perfetto Italian Restaurant, home">
         <span class="brand-mark">Perfetto</span>
-        <span class="brand-sub">Italian Restaurant<br>Tehachapi, Calif.</span>
+        <span class="brand-sub">Italian Restaurant</span>
       </a>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navLinks">
         <span class="sr-only">Menu</span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
@@ -65,170 +74,168 @@
         <li><a href="#catering">Catering</a></li>
         <li><a href="events.html">Private Events</a></li>
         <li><a href="#visit">Visit</a></li>
-        <li><a href="order.html" class="btn btn-small">Order Catering</a></li>
+        <li><a href="order.html" class="btn btn-gold btn-small">Order Catering</a></li>
       </ul>
     </nav>
   </header>
 
   <main>
-    <!-- HERO: the window sign, the chalkboard and the Tehachapi skyline -->
-    <section class="hero">
-      <div class="awning" aria-hidden="true"></div>
-      <div class="wrap hero-grid">
-        <div class="hero-copy">
-          <p class="hero-address">209 South Green Street · Tehachapi, California</p>
-          <h1 class="hero-title">
-            <span class="sign">Perfetto</span>
-            <svg class="swash" viewBox="0 0 320 34" aria-hidden="true" focusable="false"><path d="M6 22 C 48 4, 78 34, 118 20 S 190 2, 228 18 S 288 30, 314 12"/></svg>
-            <span class="hero-line">Homemade Italian, made the slow way.</span>
-          </h1>
-          <p class="hero-lede">Fresh pasta, long-simmered sauces and the lasagna people talk about. Dinner on Green Street, and catering for the whole valley.</p>
-          <div class="hero-ctas">
-            <a href="#menu" class="btn btn-paper">See the menu</a>
-            <a href="order.html" class="btn btn-outline-light">Order catering <span aria-hidden="true">→</span></a>
-          </div>
+    <!-- HERO: a slow, cinematic slideshow of the food and the room -->
+    <section class="hero" id="hero" aria-label="Perfetto Italian Restaurant">
+      <div class="hero-media" id="heroMedia">
+        <figure class="slide is-active"><img src="img/hero-pasta.jpg" alt="Fresh pasta being cut by hand"></figure>
+      </div>
+      <div class="hero-shade"></div>
+      <div class="wrap hero-content">
+        <p class="eyebrow" data-reveal>Family owned · Downtown Tehachapi</p>
+        <h1 class="hero-title">
+          <span class="ln"><span>Homemade Italian</span></span>
+          <span class="ln"><span><em>in Downtown Tehachapi.</em></span></span>
+        </h1>
+        <p class="hero-lede" data-reveal>Fresh pasta, veal, seafood and the lasagna everyone talks about. Dinner Tuesday through Saturday.</p>
+        <div class="hero-ctas" data-reveal>
+          <a class="btn btn-gold magnetic" href="tel:+16618221711">Reserve a table</a>
+          <a class="btn btn-ghost magnetic" href="#menu">View the menu</a>
         </div>
-
-        <aside class="hero-side" aria-label="Today at Perfetto">
-          <svg class="stamp" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
-            <defs><path id="stampCircle" d="M100 100 m-74 0 a74 74 0 1 1 148 0 a74 74 0 1 1 -148 0"/></defs>
-            <circle cx="100" cy="100" r="99" class="stamp-bg"/>
-            <circle cx="100" cy="100" r="96" class="stamp-ring"/>
-            <circle cx="100" cy="100" r="54" class="stamp-ring thin"/>
-            <g>
-              <animateTransform attributeName="transform" type="rotate" from="0 100 100" to="360 100 100" dur="40s" repeatCount="indefinite"/>
-              <text class="stamp-text"><textPath href="#stampCircle">Homemade pasta ✦ Family owned ✦ Green Street ✦</textPath></text>
-            </g>
-            <text x="100" y="98" text-anchor="middle" class="stamp-script">Tehachapi</text>
-            <text x="100" y="121" text-anchor="middle" class="stamp-small">CALIFORNIA</text>
-          </svg>
-
-          <div class="chalk">
-            <p class="chalk-label">Today on Green Street</p>
-            <p class="chalk-status" id="openStatus">Dinner Tue–Sat, 4:30–8</p>
-            <p class="chalk-note">Ask about tonight's specials: seafood pasta and sea bass.</p>
-            <a class="chalk-link" href="tel:+16618221711">Reserve a table · (661) 822-1711</a>
-          </div>
-        </aside>
       </div>
-      <div class="skyline-wrap" data-skyline="hero"></div>
-    </section>
-
-    <!-- AT A GLANCE -->
-    <section class="infobar" aria-label="Hours and contact">
-      <div class="wrap infobar-grid">
-        <div><span class="k">Dinner</span><span class="v">Tue–Sat · 4:30–8 PM</span></div>
-        <div><span class="k">Reservations</span><a class="v" href="tel:+16618221711">(661) 822-1711</a></div>
-        <div><span class="k">Find us</span><a class="v" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=Perfetto+Italian+Restaurant+209+S+Green+St+Tehachapi+CA">209 S Green St</a></div>
-        <div><span class="k">Pickup</span><a class="v" href="#" data-order-link target="_blank" rel="noopener">Order online <span aria-hidden="true">↗</span></a></div>
-      </div>
-    </section>
-
-    <!-- HOUSE FAVORITES -->
-    <section class="favorites" aria-labelledby="favTitle">
-      <div class="wrap fav-wrap">
-        <div class="fav-head">
-          <p class="label"><span>01</span>House favorites</p>
-          <h2 id="favTitle">The plates people <em class="script">come back for</em></h2>
-          <p class="lede">Made in our Green Street kitchen the same way every night. If it's your first visit, start here.</p>
-          <a class="text-link" href="#menu">See the full menu <span aria-hidden="true">↓</span></a>
+      <div class="hero-bar">
+        <div class="wrap hero-bar-inner">
+          <p class="status"><i aria-hidden="true"></i><span data-open-status>Dinner Tuesday – Saturday · 4:30 – 8</span></p>
+          <div class="slide-progress" id="slideProgress" aria-hidden="true"></div>
+          <a class="scroll-cue" href="#story">Scroll <span aria-hidden="true"></span></a>
         </div>
-        <ol class="fav-list" id="favList"></ol>
       </div>
     </section>
 
-    <!-- OVERHEARD -->
-    <section class="quotes" aria-labelledby="quotesTitle">
-      <div class="wrap">
-        <p class="label" id="quotesTitle"><span>02</span>Overheard on Green Street</p>
-        <div class="quote-row" id="reviewGrid"></div>
+    <!-- OUR KITCHEN -->
+    <section class="story" id="story" aria-labelledby="storyTitle">
+      <div class="wrap story-grid">
+        <figure class="story-media reveal-img" data-parallax>
+          <img src="img/kitchen-hands.jpg" alt="Fresh tagliatelle held in a cook's hands" loading="lazy">
+        </figure>
+        <div class="story-copy">
+          <p class="eyebrow" data-reveal>Our kitchen</p>
+          <h2 id="storyTitle" data-words>Everything starts <em>with the pasta.</em></h2>
+          <p class="lede" data-reveal>Pasta made fresh in our kitchen, sauces that simmer for hours, and a lasagna built layer by layer. It's the kind of Italian cooking that's worth the trip downtown.</p>
+          <ul class="facts" data-reveal>
+            <li><strong>Fresh</strong><span>Pasta made in house</span></li>
+            <li><strong>Family</strong><span>Owned and run</span></li>
+            <li><strong>Tue–Sat</strong><span>Dinner from 4:30</span></li>
+          </ul>
+        </div>
       </div>
     </section>
 
-    <!-- THE MENU CARD -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track" id="marquee">
+        <span>Fresh pasta</span><b>✦</b><span>Bolognese lasagna</span><b>✦</b><span>Veal marsala</span><b>✦</b><span>Shrimp scampi</span><b>✦</b><span>Chicken parmesan</span><b>✦</b><span>Tiramisu</span><b>✦</b>
+      </div>
+    </div>
+
+    <!-- SIGNATURE DISHES: a gallery that slides sideways as you scroll -->
+    <section class="signature" id="signature" aria-labelledby="sigTitle">
+      <div class="sig-sticky">
+        <div class="wrap sig-head">
+          <div>
+            <p class="eyebrow" data-reveal>Signature dishes</p>
+            <h2 id="sigTitle" data-words>What our regulars <em>come back for</em></h2>
+          </div>
+          <a class="text-link" href="#menu">Full menu <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="sig-viewport">
+          <div class="sig-track" id="sigTrack"></div>
+        </div>
+        <div class="wrap"><div class="sig-progress"><span id="sigProgress"></span></div></div>
+      </div>
+    </section>
+
+    <!-- THE MENU -->
     <section class="menu-section" id="menu" aria-labelledby="menuTitle">
       <div class="wrap">
-        <p class="label"><span>03</span>The menu</p>
-        <div class="menu-card">
-          <header class="menu-head">
-            <span class="menu-script">Perfetto</span>
-            <h2 id="menuTitle">Dinner Menu</h2>
-            <p class="ornament">Tuesday – Saturday · 4:30 to 8</p>
-          </header>
-          <div class="menu-tabs" role="tablist" aria-label="Menu sections" id="menuTabs"></div>
-          <div class="menu-panels" id="menuPanels"></div>
-          <p class="menu-note" id="menuNote"></p>
-        </div>
+        <header class="menu-head">
+          <p class="eyebrow" data-reveal>The menu</p>
+          <h2 id="menuTitle" data-words>Dinner <em>menu</em></h2>
+          <p class="menu-sub" data-reveal>Tuesday to Saturday · 4:30 to 8 · <a href="#" data-order-link target="_blank" rel="noopener">Order pickup online ↗</a></p>
+        </header>
+        <div class="menu-tabs" role="tablist" aria-label="Menu sections" id="menuTabs"></div>
+        <div class="menu-panels" id="menuPanels"></div>
+        <p class="menu-note" id="menuNote"></p>
+      </div>
+      <div class="menu-preview" id="menuPreview" aria-hidden="true"><img alt=""></div>
+    </section>
+
+    <!-- GUESTS SAY -->
+    <section class="reviews" aria-labelledby="reviewsTitle">
+      <div class="reviews-bg" data-parallax><img src="img/hero-room.jpg" alt="" loading="lazy"></div>
+      <div class="wrap reviews-inner">
+        <p class="eyebrow" id="reviewsTitle">Guests say</p>
+        <div class="quote-stage" id="reviewGrid" aria-live="polite"></div>
+        <div class="quote-dots" id="quoteDots"></div>
       </div>
     </section>
 
     <!-- CATERING -->
     <section class="catering" id="catering" aria-labelledby="catTitle">
-      <div class="wrap">
-        <div class="cat-head">
-          <div>
-            <p class="label light"><span>04</span>Catering</p>
-            <h2 id="catTitle">Feeding the <em class="script">whole crowd</em></h2>
-          </div>
-          <div class="cat-intro">
-            <p class="lede">Lasagna, pasta and chicken marsala travel beautifully. We cook everything fresh in our Green Street kitchen and have it hot and ready when you are, for 10 guests or 200.</p>
-            <ul class="occasions">
-              <li>Office lunches & meetings</li>
-              <li>Weddings & rehearsal dinners</li>
-              <li>Team dinners & banquets</li>
-              <li>Church & community events</li>
-              <li>Graduations & birthdays</li>
-              <li>Holiday parties</li>
-            </ul>
-            <a href="order.html" class="btn btn-butter">Start a catering order <span aria-hidden="true">→</span></a>
-          </div>
+      <div class="wrap cat-intro">
+        <figure class="cat-media reveal-img" data-parallax>
+          <img src="img/catering.jpg" alt="Hot catering dishes in chafing trays" loading="lazy">
+        </figure>
+        <div class="cat-copy">
+          <p class="eyebrow" data-reveal>Catering</p>
+          <h2 id="catTitle" data-words>Bring Perfetto <em>to your event.</em></h2>
+          <p class="lede" data-reveal>Lasagna, pasta and chicken marsala travel beautifully. We cook everything fresh and have it hot and ready when you are, for 10 guests or 200.</p>
+          <ul class="occasions" data-reveal>
+            <li>Office lunches & meetings</li>
+            <li>Weddings & rehearsal dinners</li>
+            <li>Team dinners & banquets</li>
+            <li>Church & community events</li>
+            <li>Graduations & birthdays</li>
+            <li>Holiday parties</li>
+          </ul>
+          <a href="order.html" class="btn btn-gold magnetic" data-reveal>Start a catering order <span aria-hidden="true">→</span></a>
         </div>
+      </div>
 
+      <div class="wrap">
         <ol class="steps">
-          <li><span class="step-n">1</span><h3>Pick a package or trays</h3><p>Per-person packages keep it simple. Trays let you build your own spread.</p></li>
-          <li><span class="step-n">2</span><h3>Send your request</h3><p>Tell us your date and headcount. We confirm within one business day.</p></li>
-          <li><span class="step-n">3</span><h3>Pick up, or we deliver</h3><p>Hot, labeled and ready to serve. Chafing dishes available.</p></li>
+          <li data-reveal><span class="step-n">01</span><h3>Pick a package or trays</h3><p>Per-person packages keep it simple. Trays let you build your own spread.</p></li>
+          <li data-reveal><span class="step-n">02</span><h3>Send your request</h3><p>Tell us your date and headcount. We confirm within one business day.</p></li>
+          <li data-reveal><span class="step-n">03</span><h3>Pick up, or we deliver</h3><p>Hot, labeled and ready to serve. Chafing dishes available.</p></li>
         </ol>
 
-        <h3 class="sub-title">Per-person packages <small>Choose your dishes when you order</small></h3>
+        <h3 class="sub-title" data-reveal>Per-person packages <small>Choose your dishes when you order</small></h3>
         <div class="packages" id="packages"></div>
 
-        <h3 class="sub-title">Trays, extras & drinks <small>Half pan serves 8–10 · Full pan serves 18–22</small></h3>
-        <div class="trays" id="trays"></div>
+        <details class="trays-wrap" data-reveal>
+          <summary><span>Trays, extras &amp; drinks</span><small>Half pan serves 8–10 · Full pan serves 18–22</small><i aria-hidden="true"></i></summary>
+          <div class="trays" id="trays"></div>
+        </details>
 
-        <div class="payment" id="payment" aria-labelledby="payTitle"></div>
-        <div class="terms" id="terms"></div>
+        <div class="payment" id="payment" aria-labelledby="payTitle" data-reveal></div>
+        <div class="terms" id="terms" data-reveal></div>
+      </div>
 
-        <div class="order-cta">
+      <div class="order-cta">
+        <div class="order-cta-bg" data-parallax><img src="img/catering-trays.jpg" alt="" loading="lazy"></div>
+        <div class="wrap order-cta-inner">
           <div>
-            <h3>Ready to order?</h3>
-            <p>Pick your package and dishes, watch your estimate add up, and send it over. About two minutes, and nothing to pay now.</p>
+            <h3 data-words>Ready to <em>order?</em></h3>
+            <p data-reveal>Pick your package and dishes, watch your estimate add up, and send it over. About two minutes, and nothing to pay now.</p>
           </div>
-          <a href="order.html" class="btn btn-large">Start your catering order <span aria-hidden="true">→</span></a>
+          <a href="order.html" class="btn btn-gold btn-large magnetic" data-reveal>Start your catering order <span aria-hidden="true">→</span></a>
         </div>
       </div>
     </section>
 
     <!-- PRIVATE EVENTS -->
-    <section class="events-band" aria-labelledby="eventsTitle">
-      <div class="wrap events-grid">
-        <div>
-          <p class="label"><span>05</span>Private events</p>
-          <h2 id="eventsTitle">Your party, <em class="script">our dining room</em></h2>
-          <p class="lede">Rehearsal dinners, birthdays, showers, business dinners and holiday parties on Green Street. Reserve a section, or ask about having the place to yourselves on Sundays and Mondays.</p>
-          <a href="events.html" class="btn">Plan a private event <span aria-hidden="true">→</span></a>
-        </div>
-        <div class="reserved" aria-hidden="true">
-          <span class="reserved-script">Reserved</span>
-          <span class="reserved-sub">for your party</span>
-          <ul>
-            <li>Rehearsal dinners</li>
-            <li>Birthdays & anniversaries</li>
-            <li>Showers</li>
-            <li>Business dinners</li>
-            <li>Holiday parties</li>
-          </ul>
-        </div>
+    <section class="events" id="events" aria-labelledby="eventsTitle">
+      <div class="events-bg" data-parallax><img src="img/events-table.jpg" alt="A long table set with candles for a private dinner" loading="lazy"></div>
+      <div class="events-shade"></div>
+      <div class="wrap events-content">
+        <p class="eyebrow" data-reveal>Private events</p>
+        <h2 id="eventsTitle" data-words>Celebrate <em>with us.</em></h2>
+        <p class="lede" data-reveal>Rehearsal dinners, birthdays, showers, business dinners and holiday parties. Reserve a section, or ask about having the restaurant to yourselves on Sundays and Mondays.</p>
+        <a href="events.html" class="btn btn-gold magnetic" data-reveal>Plan a private event <span aria-hidden="true">→</span></a>
       </div>
     </section>
 
@@ -236,25 +243,25 @@
     <section class="visit" id="visit" aria-labelledby="visitTitle">
       <div class="wrap visit-grid">
         <div>
-          <p class="label"><span>06</span>Visit</p>
-          <h2 id="visitTitle">Find us on Green Street</h2>
-          <address>
+          <p class="eyebrow" data-reveal>Visit</p>
+          <h2 id="visitTitle" data-words>Find us in <em>Downtown Tehachapi</em></h2>
+          <address data-reveal>
             Perfetto Italian Restaurant<br>
             209 S Green St, Tehachapi, CA 93561<br>
             <a href="tel:+16618221711">(661) 822-1711</a>
           </address>
-          <div class="door-sign">
-            <p class="door-script">Come on in</p>
+          <div class="hours-card" data-reveal>
+            <p class="status dark"><i aria-hidden="true"></i><span data-open-status>Dinner Tuesday – Saturday · 4:30 – 8</span></p>
             <dl class="hours" id="hoursList"></dl>
           </div>
-          <p class="small">It gets busy, so reservations are recommended. <span data-order-hours></span>.</p>
-          <div class="visit-ctas">
-            <a class="btn" href="tel:+16618221711">Call to reserve</a>
-            <a class="btn btn-paper" href="#" data-order-link target="_blank" rel="noopener">Order pickup online</a>
-            <a class="text-link" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=Perfetto+Italian+Restaurant+209+S+Green+St+Tehachapi+CA">Get directions <span aria-hidden="true">↗</span></a>
+          <p class="small" data-reveal>It gets busy, so reservations are recommended. <span data-order-hours></span>.</p>
+          <div class="visit-ctas" data-reveal>
+            <a class="btn btn-dark magnetic" href="tel:+16618221711">Call to reserve</a>
+            <a class="btn btn-outline magnetic" href="#" data-order-link target="_blank" rel="noopener">Order pickup online</a>
+            <a class="text-link dark" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=Perfetto+Italian+Restaurant+209+S+Green+St+Tehachapi+CA">Directions <span aria-hidden="true">↗</span></a>
           </div>
         </div>
-        <div class="map-wrap">
+        <div class="map-wrap reveal-img">
           <iframe title="Map to Perfetto Italian Restaurant" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
             src="https://maps.google.com/maps?q=209%20S%20Green%20St%2C%20Tehachapi%2C%20CA%2093561&z=16&output=embed"></iframe>
         </div>
@@ -268,7 +275,7 @@
       <div class="wrap footer-grid">
         <div class="footer-brand">
           <span class="footer-mark">Perfetto</span>
-          <p>Homemade Italian on Green Street, nearly 4,000 feet up in Tehachapi.</p>
+          <p>Homemade Italian in Downtown Tehachapi. Family owned and run.</p>
         </div>
         <div>
           <h4>Visit</h4>
@@ -283,7 +290,7 @@
           <p><a href="#menu">Menu</a><br><a href="#catering">Catering</a><br><a href="order.html">Order catering</a><br><a href="events.html">Private events</a></p>
         </div>
       </div>
-      <p class="wrap copyright">© <span id="year"></span> Perfetto Italian Restaurant · Tehachapi, California</p>
+      <p class="wrap copyright">© <span id="year"></span> Perfetto Italian Restaurant · Downtown Tehachapi, California</p>
     </div>
   </footer>
 
@@ -292,5 +299,6 @@
   <script src="js/menu-data.js"></script>
   <script src="js/common.js"></script>
   <script src="js/home.js"></script>
+  <script src="js/motion.js"></script>
 </body>
 </html>
