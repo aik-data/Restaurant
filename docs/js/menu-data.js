@@ -30,6 +30,8 @@
       { days: "Tuesday – Saturday", time: "4:30 – 8:00 PM" },
       { days: "Sunday & Monday", time: "Closed" },
     ],
+    // Same hours, for the live "open now" sign (0 = Sunday … 6 = Saturday, 24-hour times)
+    schedule: { days: [2, 3, 4, 5, 6], open: "16:30", close: "20:00", timeZone: "America/Los_Angeles" },
     cateringHours: "Catering available 7 days a week, lunch or dinner, with advance notice.",
   },
 

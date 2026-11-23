@@ -198,6 +198,8 @@
       : '<li class="muted">Choose a package or trays to see an estimate.</li>';
     $("#summaryTotal").textContent = money(r.total);
     $("#summaryPP").textContent = r.hasFood && r.guests > 0 ? "About " + money(r.perGuest) + " per guest for " + r.guests + " guests" : "";
+    var cg = $("#checkGuests");
+    if (cg) cg.textContent = r.guests || "—";
     return r;
   }
 
